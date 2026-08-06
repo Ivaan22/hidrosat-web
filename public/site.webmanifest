@@ -1,0 +1,17 @@
+{
+  "name": "HIDROSAT",
+  "short_name": "HIDROSAT",
+  "description": "Infraestructura de inteligencia hídrica en desarrollo.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f8f6",
+  "theme_color": "#041a2f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+---
+import "@fontsource-variable/sora";
+import "@fontsource-variable/ibm-plex-sans";
+import "@fontsource/ibm-plex-mono/400.css";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#041a2f" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="HIDROSAT" />
+    <meta name="twitter:card" content="summary_large_image" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Ir al contenido principal</a>
+    <slot />
+    <script is:inline>
+      document.documentElement.classList.add("has-js");
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const revealItems = document.querySelectorAll("[data-reveal]");
+
+      if (!reducedMotion.matches && "IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.setAttribute("data-visible", "true");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -8%", threshold: 0.12 });
+        revealItems.forEach((item) => observer.observe(item));
+      } else {
+        revealItems.forEach((item) => item.setAttribute("data-visible", "true"));
+      }
+
+      const header = document.querySelector("[data-site-header]");
+      const updateHeader = () => header?.toggleAttribute("data-scrolled", window.scrollY > 24);
+      updateHeader();
+      window.addEventListener("scroll", updateHeader, { passive: true });
+
+      const menuButton = document.querySelector("[data-menu-button]");
+      const menu = document.querySelector("[data-mobile-menu]");
+      const main = document.querySelector("main");
+      const footer = document.querySelector("footer");
+      const setBackgroundInert = (inert) => {
+        main?.toggleAttribute("inert", inert);
+        footer?.toggleAttribute("inert", inert);
+      };
+      const closeMenu = (restoreFocus = true) => {
+        menu?.removeAttribute("data-open");
+        menuButton?.setAttribute("aria-expanded", "false");
+        menuButton?.setAttribute("aria-label", "Abrir menú");
+        document.body.classList.remove("menu-open");
+        setBackgroundInert(false);
+        if (restoreFocus) menuButton?.focus();
+      };
+
+      menuButton?.addEventListener("click", () => {
+        const open = menu?.toggleAttribute("data-open") ?? false;
+        menuButton.setAttribute("aria-expanded", String(open));
+        menuButton.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+        document.body.classList.toggle("menu-open", open);
+        setBackgroundInert(open);
+        if (open) menu?.querySelector("a")?.focus();
+      });
+      menu?.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => closeMenu(false)));
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && menu?.hasAttribute("data-open")) closeMenu();
+      });
+      window.matchMedia("(min-width: 1051px)").addEventListener("change", (event) => {
+        if (event.matches && menu?.hasAttribute("data-open")) closeMenu(false);
+      });
+
+      if (!reducedMotion.matches && window.matchMedia("(pointer: fine)").matches) {
+        const lens = document.querySelector("[data-observation-lens]");
+        let pointerFrame = 0;
+        let pointerX = 0;
+        let pointerY = 0;
+        lens?.addEventListener("pointermove", (event) => {
+          const rect = lens.getBoundingClientRect();
+          pointerX = ((event.clientX - rect.left) / rect.width - 0.5) * 14;
+          pointerY = ((event.clientY - rect.top) / rect.height - 0.5) * 14;
+          if (pointerFrame) return;
+          pointerFrame = requestAnimationFrame(() => {
+            lens.style.setProperty("--pointer-x", `${pointerX}px`);
+            lens.style.setProperty("--pointer-y", `${pointerY}px`);
+            pointerFrame = 0;
+          });
+        });
+        lens?.addEventListener("pointerleave", () => {
+          lens.style.setProperty("--pointer-x", "0px");
+          lens.style.setProperty("--pointer-y", "0px");
+        });
+      }
+
+      const updateVisibility = () => document.documentElement.toggleAttribute("data-page-hidden", document.hidden);
+      updateVisibility();
+      document.addEventListener("visibilitychange", updateVisibility);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,109 @@
+<section class="case-window" aria-label="Ejemplo conceptual de un caso HidroOrbit">
+  <div class="case-window__bar">
+    <span>CASO CONCEPTUAL · HO–0017</span>
+    <span class="case-window__status"><i></i> Requiere revisión</span>
+  </div>
+  <div class="case-window__map" aria-hidden="true">
+    <svg viewBox="0 0 760 410">
+      <defs>
+        <pattern id="grid" width="34" height="34" patternUnits="userSpaceOnUse">
+          <path d="M34 0H0V34" fill="none" stroke="currentColor" stroke-width="0.6" />
+        </pattern>
+        <linearGradient id="fade" x1="0" x2="1">
+          <stop offset="0" stop-color="#00b9e8" stop-opacity="0" />
+          <stop offset=".55" stop-color="#00b9e8" stop-opacity=".2" />
+          <stop offset="1" stop-color="#00b9e8" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+      <rect width="760" height="410" fill="url(#grid)" opacity=".28" />
+      <path class="terrain" d="M-20 334c85-47 166-29 224-74 76-59 101-142 205-129 83 11 132 81 206 69 66-11 91-58 170-63" />
+      <path class="terrain terrain--faint" d="M-15 370c111-44 170 7 252-66 71-63 105-129 197-119 73 8 126 70 196 61 62-8 91-40 148-54" />
+      <path class="canal-shadow" d="M35 317c96-12 147-46 230-55 108-12 157 25 248-9 78-29 124-79 227-92" />
+      <path class="canal" d="M35 317c96-12 147-46 230-55 108-12 157 25 248-9 78-29 124-79 227-92" />
+      <path class="swath" d="M216-25 506 435" />
+      <circle class="signal-ring" cx="487" cy="263" r="27" />
+      <circle class="signal" cx="487" cy="263" r="7" />
+      <path class="pointer" d="m487 232 54-62h72" />
+    </svg>
+    <div class="case-window__map-label">Señal compatible con agua fuera de cauce</div>
+    <div class="case-window__scale">500 m</div>
+  </div>
+  <div class="case-window__details">
+    <div><span>Observación</span><strong>Cambio espectral localizado</strong></div>
+    <div><span>Confianza</span><strong>Media · no concluyente</strong></div>
+    <div><span>Decisión sugerida</span><strong>Priorizar inspección del tramo</strong></div>
+    <div><span>Estado humano</span><strong>Pendiente de verificación</strong></div>
+  </div>
+  <p class="case-window__note">Demostración de interfaz. No representa una detección ni un caso real.</p>
+</section>
+
+<style>
+  .case-window {
+    background: #061d2e;
+    border: 1px solid rgb(169 225 235 / 0.2);
+    box-shadow: 0 2.8rem 6rem rgb(0 0 0 / 0.24);
+    color: var(--hs-paper);
+  }
+  .case-window__bar {
+    align-items: center;
+    border-bottom: 1px solid rgb(169 225 235 / 0.16);
+    display: flex;
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    justify-content: space-between;
+    letter-spacing: 0.04em;
+    min-height: 3.35rem;
+    padding-inline: 1.25rem;
+  }
+  .case-window__status { align-items: center; display: flex; gap: 0.5rem; }
+  .case-window__status i { background: var(--hs-review); border-radius: 50%; height: 0.45rem; width: 0.45rem; }
+  .case-window__map { color: var(--hs-glacier); min-height: 20rem; overflow: hidden; position: relative; }
+  .case-window__map svg { height: 100%; inset: 0; position: absolute; width: 100%; }
+  .terrain { fill: none; opacity: 0.45; stroke: var(--hs-glacier); stroke-width: 1; }
+  .terrain--faint { opacity: 0.2; }
+  .canal-shadow { fill: none; stroke: rgb(0 0 0 / 0.55); stroke-width: 15; }
+  .canal { fill: none; stroke: var(--hs-current); stroke-linecap: round; stroke-width: 7; }
+  .swath { fill: none; stroke: var(--hs-paper); stroke-dasharray: 4 8; stroke-width: 1; }
+  .signal-ring { fill: rgb(0 185 232 / 0.08); stroke: var(--hs-signal); stroke-width: 1; }
+  .signal { fill: var(--hs-signal); }
+  .pointer { fill: none; stroke: var(--hs-signal); stroke-width: 1; }
+  .case-window__map-label {
+    color: var(--hs-paper);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    left: 71%;
+    max-width: 9rem;
+    position: absolute;
+    top: 37%;
+  }
+  .case-window__scale {
+    border-bottom: 1px solid currentColor;
+    bottom: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.56rem;
+    left: 1rem;
+    padding-bottom: 0.3rem;
+    position: absolute;
+    width: 3.4rem;
+  }
+  .case-window__details {
+    border-top: 1px solid rgb(169 225 235 / 0.16);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .case-window__details > div { min-height: 5rem; padding: 1rem 1.25rem; }
+  .case-window__details > div:nth-child(odd) { border-right: 1px solid rgb(169 225 235 / 0.16); }
+  .case-window__details > div:nth-child(-n+2) { border-bottom: 1px solid rgb(169 225 235 / 0.16); }
+  .case-window__details span, .case-window__details strong { display: block; }
+  .case-window__details span { color: var(--hs-glacier); font-family: var(--font-mono); font-size: 0.58rem; text-transform: uppercase; }
+  .case-window__details strong { font-size: 0.78rem; font-weight: 500; margin-top: 0.55rem; }
+  .case-window__note { color: var(--hs-glacier); font-size: 0.62rem; margin: 0; padding: 0.75rem 1.25rem; }
+
+  @media (max-width: 560px) {
+    .case-window__bar { align-items: flex-start; flex-direction: column; gap: 0.45rem; justify-content: center; }
+    .case-window__map { min-height: 15rem; }
+    .case-window__map-label { left: 58%; top: 32%; }
+    .case-window__details { grid-template-columns: 1fr; }
+    .case-window__details > div { border-bottom: 1px solid rgb(169 225 235 / 0.16); border-right: 0 !important; }
+  }
+</style>

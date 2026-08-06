@@ -1,0 +1,153 @@
+---
+import { Image } from "astro:assets";
+import observationField from "../assets/observation-field.png";
+---
+
+<figure class="observation" data-observation-lens>
+  <div class="observation__frame">
+    <Image
+      class="observation__image"
+      src={observationField}
+      alt="Territorio hídrico conceptual visto desde arriba, con cursos de agua y parcelas agrícolas"
+      width={1200}
+      format="avif"
+      quality={82}
+      loading="eager"
+      fetchpriority="high"
+    />
+    <div class="observation__shade" aria-hidden="true"></div>
+    <svg class="observation__geometry" viewBox="0 0 700 780" aria-hidden="true">
+      <path class="observation__contour" d="M-40 568c93-102 175-154 274-156 108-2 177 65 273 20 76-36 125-96 225-87" />
+      <path class="observation__contour observation__contour--two" d="M-55 626c120-115 229-153 339-116 105 35 169 3 260-51 62-37 115-44 204-31" />
+      <path class="observation__swath" d="M-35 709 592-45" />
+      <circle class="observation__point-pulse" cx="392" cy="276" r="14" />
+      <circle class="observation__point" cx="392" cy="276" r="5" />
+    </svg>
+    <div class="observation__source">
+      <span>CAMPO DE OBSERVACIÓN · 001</span>
+      <strong>Composición conceptual</strong>
+    </div>
+    <div class="observation__location">
+      <span aria-hidden="true"></span>
+      Agua · territorio · evidencia
+    </div>
+  </div>
+  <figcaption>
+    <span>Imagen sintética</span>
+    No representa una escena, evento ni resultado operativo real.
+  </figcaption>
+</figure>
+
+<style>
+  .observation {
+    --pointer-x: 0px;
+    --pointer-y: 0px;
+    margin: 0;
+    min-width: 0;
+    position: relative;
+  }
+  .observation::before {
+    border: 1px solid color-mix(in srgb, var(--hs-current) 34%, transparent);
+    border-radius: 50%;
+    content: "";
+    inset: -3.5rem 9% 12%;
+    pointer-events: none;
+    position: absolute;
+  }
+  .observation__frame {
+    aspect-ratio: 0.9;
+    background: var(--hs-abyss);
+    border-radius: 48% 48% 1rem 1rem;
+    box-shadow: 0 3rem 7rem rgb(4 26 47 / 0.24);
+    clip-path: inset(0 round 48% 48% 1rem 1rem);
+    overflow: hidden;
+    position: relative;
+    transform: translate(var(--pointer-x), var(--pointer-y));
+    transition: transform 500ms cubic-bezier(.2,.7,.2,1);
+  }
+  .observation__image {
+    height: 100%;
+    inset: 0;
+    object-fit: cover;
+    position: absolute;
+    transform: scale(1.08);
+    width: 100%;
+  }
+  .observation__shade {
+    background: linear-gradient(180deg, rgb(4 26 47 / 0.04), transparent 50%, rgb(4 26 47 / 0.72));
+    inset: 0;
+    position: absolute;
+  }
+  .observation__geometry { inset: 0; height: 100%; position: absolute; width: 100%; }
+  .observation__contour {
+    fill: none;
+    opacity: 0.55;
+    stroke: var(--hs-glacier);
+    stroke-width: 1;
+  }
+  .observation__contour--two { opacity: 0.28; }
+  .observation__swath {
+    fill: none;
+    opacity: 0.75;
+    stroke: var(--hs-paper);
+    stroke-dasharray: 5 8;
+    stroke-width: 1.25;
+  }
+  .observation__point { fill: var(--hs-signal); }
+  .observation__point-pulse {
+    fill: none;
+    stroke: var(--hs-signal);
+    stroke-width: 1;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse 3.2s ease-out infinite;
+  }
+  .observation__source, .observation__location {
+    color: var(--hs-paper);
+    font-family: var(--font-mono);
+    position: absolute;
+  }
+  .observation__source { left: 1.5rem; top: 43%; }
+  .observation__source span, .observation__source strong { display: block; }
+  .observation__source span { font-size: 0.58rem; letter-spacing: 0.12em; opacity: 0.72; }
+  .observation__source strong { font-size: 0.68rem; font-weight: 400; margin-top: 0.4rem; }
+  .observation__location {
+    align-items: center;
+    bottom: 1.5rem;
+    display: flex;
+    font-size: 0.62rem;
+    gap: 0.65rem;
+    left: 1.5rem;
+  }
+  .observation__location span { background: var(--hs-signal); border-radius: 50%; height: 0.42rem; width: 0.42rem; }
+  .observation figcaption {
+    color: var(--hs-atlantic);
+    display: flex;
+    font-size: 0.7rem;
+    gap: 0.65rem;
+    line-height: 1.45;
+    margin-top: 0.8rem;
+  }
+  .observation figcaption span {
+    color: var(--hs-abyss);
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 0.9; transform: scale(0.65); }
+    70%, 100% { opacity: 0; transform: scale(2.3); }
+  }
+
+  @media (max-width: 760px) {
+    .observation::before { inset: -1.5rem 8% 10%; }
+    .observation__frame { border-radius: 45% 45% 0.75rem 0.75rem; clip-path: inset(0 round 45% 45% 0.75rem 0.75rem); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .observation__frame { transform: none; transition: none; }
+    .observation__point-pulse { animation: none; opacity: 0.5; }
+  }
+
+  :global(html[data-page-hidden]) .observation__point-pulse { animation-play-state: paused; }
+</style>

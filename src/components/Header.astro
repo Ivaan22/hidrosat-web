@@ -1,0 +1,125 @@
+---
+import Brand from "./Brand.astro";
+
+const links = [
+  ["Misión", "#mision"],
+  ["Cómo funciona", "#metodo"],
+  ["Capacidades", "#capacidades"],
+  ["HidroOrbit", "#hidroorbit"],
+  ["Evidencia", "#evidencia"],
+];
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner shell">
+    <Brand />
+    <nav class="site-nav" aria-label="Navegación principal">
+      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+    </nav>
+    <a class="button button--small button--ink site-header__cta" href="#colaborar">Proponer un territorio</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="mobile-menu" aria-label="Abrir menú" data-menu-button>
+      <span></span><span></span>
+    </button>
+  </div>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Navegación móvil" data-mobile-menu>
+    <div class="mobile-menu__inner shell">
+      {links.map(([label, href], index) => (
+        <a href={href}><span>{String(index + 1).padStart(2, "0")}</span>{label}</a>
+      ))}
+      <a class="button button--signal" href="#colaborar">Proponer un territorio</a>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    color: var(--hs-abyss);
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: background-color 220ms ease, box-shadow 220ms ease;
+    z-index: 50;
+  }
+
+  .site-header[data-scrolled] {
+    background: color-mix(in srgb, var(--hs-paper) 91%, transparent);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--hs-abyss) 13%, transparent);
+    backdrop-filter: blur(18px);
+  }
+
+  .site-header__inner {
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    min-height: 5.25rem;
+  }
+
+  .site-nav { display: flex; gap: clamp(1rem, 2vw, 2rem); }
+  .site-nav a {
+    color: inherit;
+    font-size: 0.83rem;
+    font-weight: 560;
+    text-decoration: none;
+  }
+  .site-nav a:hover { color: var(--hs-current); }
+  .site-header__cta { justify-self: end; }
+
+  .menu-button {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: inherit;
+    display: none;
+    height: 2.75rem;
+    justify-content: center;
+    justify-self: end;
+    padding: 0;
+    position: relative;
+    width: 2.75rem;
+  }
+  .menu-button span {
+    background: currentColor;
+    height: 1px;
+    position: absolute;
+    transition: transform 180ms ease;
+    width: 1.35rem;
+  }
+  .menu-button span:first-child { transform: translateY(-4px); }
+  .menu-button span:last-child { transform: translateY(4px); }
+  .menu-button[aria-expanded="true"] span:first-child { transform: rotate(45deg); }
+  .menu-button[aria-expanded="true"] span:last-child { transform: rotate(-45deg); }
+
+  .mobile-menu {
+    background: var(--hs-abyss);
+    color: var(--hs-paper);
+    display: none;
+    height: calc(100dvh - 5.25rem);
+    overflow-y: auto;
+  }
+  .mobile-menu__inner { display: grid; padding-block: 1.5rem 3rem; }
+  .mobile-menu a:not(.button) {
+    align-items: baseline;
+    border-bottom: 1px solid rgb(255 255 255 / 0.14);
+    color: inherit;
+    display: flex;
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 8vw, 2.5rem);
+    gap: 1rem;
+    padding-block: 1rem;
+    text-decoration: none;
+  }
+  .mobile-menu a span {
+    color: var(--hs-signal);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+  .mobile-menu .button { margin-top: 2rem; }
+  .mobile-menu[data-open] { display: block; }
+
+  @media (max-width: 1050px) {
+    .site-header__inner { grid-template-columns: 1fr auto; }
+    .site-nav, .site-header__cta { display: none; }
+    .menu-button { display: inline-flex; }
+  }
+</style>
