@@ -5,37 +5,50 @@ import Brand from "./Brand.astro";
 <footer class="footer">
   <div class="footer__top shell">
     <Brand inverse />
-    <p>Infraestructura en desarrollo para comprender y proteger el agua desde el espacio.</p>
+    <p>Agentes de IA satelitales para ayudar a cuidar el agua desde el espacio.</p>
     <a href="#top">Volver arriba <span aria-hidden="true">↑</span></a>
   </div>
   <div class="footer__bottom shell">
-    <span>Proyecto en desarrollo</span>
+    <span>Organización tecnológica de propósito público</span>
     <span>Bahía Blanca · Argentina</span>
-    <span>HIDROSAT © {new Date().getFullYear()}</span>
+    <span>En desarrollo · {new Date().getFullYear()}</span>
   </div>
 </footer>
 
 <style>
-  .footer { background: #02111f; color: var(--hs-paper); }
+  .footer { background: #020e19; color: var(--hs-paper); }
   .footer__top {
     align-items: end;
     display: grid;
     gap: 2rem;
     grid-template-columns: 1fr 2fr auto;
-    padding-block: 4rem;
+    padding-block: 4.5rem;
   }
-  .footer__top p { font-family: var(--font-display); font-size: clamp(1.2rem, 2vw, 1.7rem); margin: 0; max-width: 35rem; }
-  .footer__top > a { color: var(--hs-glacier); font-size: 0.78rem; text-decoration: none; }
+  .footer__top p {
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.1vw, 1.85rem);
+    line-height: 1.35;
+    margin: 0;
+    max-width: 39rem;
+  }
+  .footer__top > a {
+    color: var(--hs-glacier);
+    font-size: 0.78rem;
+    min-height: 2.75rem;
+    padding-top: 0.8rem;
+    text-decoration: none;
+  }
   .footer__top > a span { color: var(--hs-signal); margin-left: 0.45rem; }
   .footer__bottom {
     border-top: 1px solid rgb(245 248 246 / 0.14);
     color: rgb(245 248 246 / 0.58);
     display: flex;
     font-family: var(--font-mono);
-    font-size: 0.58rem;
+    font-size: 0.55rem;
+    gap: 1.25rem;
     justify-content: space-between;
     letter-spacing: 0.06em;
-    padding-block: 1.25rem 2rem;
+    padding-block: 1.35rem 2rem;
     text-transform: uppercase;
   }
 

@@ -1,7 +1,7 @@
 {
   "name": "HIDROSAT",
   "short_name": "HIDROSAT",
-  "description": "Infraestructura de inteligencia hídrica en desarrollo.",
+  "description": "Agentes de IA satelitales para ayudar a cuidar el agua.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f8f6",

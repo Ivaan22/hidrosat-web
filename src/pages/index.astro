@@ -1,259 +1,383 @@
 ---
+import { Image } from "astro:assets";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Header from "../components/Header.astro";
-import ObservationLens from "../components/ObservationLens.astro";
-import EvidenceCase from "../components/EvidenceCase.astro";
 import Footer from "../components/Footer.astro";
+import AgentIcon from "../components/AgentIcon.astro";
+import EvidenceCase from "../components/EvidenceCase.astro";
+import observationField from "../assets/observation-field.png";
+import fieldVerification from "../assets/field-verification.png";
+import canalInfrastructure from "../assets/canal-infrastructure.png";
 
-const steps = [
-  { number: "01", title: "Observar", text: "Integramos escenas satelitales y datos territoriales con controles de calidad y procedencia." },
-  { number: "02", title: "Interpretar", text: "Buscamos cambios compatibles con un fenómeno y conservamos explicaciones alternativas." },
-  { number: "03", title: "Decidir", text: "Convertimos la evidencia disponible en una prioridad clara, no en un veredicto automático." },
-  { number: "04", title: "Verificar", text: "Una persona confirma, descarta o caracteriza el caso con conocimiento de campo." },
-  { number: "05", title: "Aprender", text: "El resultado vuelve al sistema sin borrar el historial ni la incertidumbre original." },
+const agents = [
+  {
+    number: "01",
+    icon: "infrastructure" as const,
+    slug: "infrastructure",
+    title: "Infraestructura hídrica",
+    text: "Compara canales, reservorios y obras abiertas para señalar sectores que conviene inspeccionar.",
+    limit: "Marca señales compatibles; no confirma por sí solo una fuga.",
+    signal: "sectores para revisar",
+  },
+  {
+    number: "02",
+    icon: "drought" as const,
+    slug: "drought",
+    title: "Sequía y ecosistemas",
+    text: "Sigue la evolución del agua superficial y el estrés del territorio para advertir cambios persistentes.",
+    limit: "Combina historia y contexto climático; un índice aislado no alcanza.",
+    signal: "cambios persistentes",
+  },
+  {
+    number: "03",
+    icon: "quality" as const,
+    slug: "quality",
+    title: "Calidad del agua",
+    text: "Busca cambios de color, turbidez o floraciones que justifican revisar el lugar o tomar muestras.",
+    limit: "No certifica potabilidad ni reemplaza un laboratorio.",
+    signal: "señales para muestreo",
+  },
+  {
+    number: "04",
+    icon: "flood" as const,
+    slug: "flood",
+    title: "Inundaciones",
+    text: "Delimita cómo se expande el agua después de cada observación para ayudar a priorizar la respuesta.",
+    limit: "Se actualiza según las pasadas disponibles; no ofrece visión continua.",
+    signal: "extensión observada",
+  },
 ];
 
-const domains = [
-  { number: "01", title: "Infraestructura y pérdidas", text: "Canales, drenajes, reservorios y sistemas abiertos donde cada inspección necesita foco y contexto." },
-  { number: "02", title: "Sequía y ecosistemas", text: "Cambios en agua superficial, vegetación y territorio para acompañar decisiones de anticipación." },
-  { number: "03", title: "Calidad de agua", text: "Señales ópticas compatibles con turbidez o floraciones como alerta temprana para muestreo y revisión." },
-  { number: "04", title: "Inundaciones y cuencas", text: "Extensión y dinámica del agua para comprender exposición, evolución y prioridades de respuesta." },
+const journeySteps = [
+  {
+    number: "01",
+    title: "Los agentes observan",
+    text: "Reúnen imágenes satelitales y datos útiles del territorio, siempre con fecha y procedencia.",
+    owner: "Sistema",
+  },
+  {
+    number: "02",
+    title: "Comparan cambios",
+    text: "Analizan qué cambió respecto de otras fechas y qué contexto podría explicarlo.",
+    owner: "Sistema",
+  },
+  {
+    number: "03",
+    title: "Preparan una alerta",
+    text: "Organizan la señal, las explicaciones posibles y la incertidumbre para que alguien pueda revisarla.",
+    owner: "Sistema",
+  },
+  {
+    number: "04",
+    title: "Las personas verifican y deciden",
+    text: "Operadores, científicos o comunidades inspeccionan, miden o toman muestras para confirmar qué ocurrió.",
+    owner: "Persona",
+  },
 ];
 ---
 
 <BaseLayout
-  title="HIDROSAT — Del espacio a mejores decisiones sobre el agua"
-  description="HIDROSAT convierte observación satelital, datos territoriales y conocimiento humano en evidencia verificable para comprender y proteger el agua."
+  title="HIDROSAT — Agentes de IA satelitales para cuidar el agua"
+  description="Organización tecnológica de propósito público que construye agentes de IA satelitales para observar cambios en ríos, embalses, cuencas e infraestructura hídrica y ayudar a decidir dónde actuar."
 >
   <Header />
   <main id="main">
-    <section class="hero" id="top" aria-labelledby="hero-title">
-      <div class="hero__grid shell">
-        <div class="hero__copy" data-reveal>
-          <p class="eyebrow"><span></span> Infraestructura de inteligencia hídrica en desarrollo</p>
-          <h1 id="hero-title">Del espacio a mejores decisiones sobre el agua.</h1>
-          <p class="hero__lede">HIDROSAT combina observación satelital, datos territoriales y conocimiento humano para convertir cambios ambientales en evidencia verificable para la acción.</p>
+    <section class="hero" id="top" aria-labelledby="hero-title" data-hero-scene data-depth-scene>
+      <div class="hero__media" aria-hidden="true">
+        <Image
+          class="hero__image"
+          src={observationField}
+          alt=""
+          width={2048}
+          format="avif"
+          quality={84}
+          loading="eager"
+          fetchpriority="high"
+        />
+        <div class="hero__wash"></div>
+        <div class="hero__swath"></div>
+        <svg class="hero__basin" viewBox="0 0 1600 1000" preserveAspectRatio="none">
+          <path d="M-40 650c166-143 318-191 478-121 171 74 306 56 443-58 177-147 327-113 738-215" />
+          <path d="M-50 744c180-125 331-145 493-70 165 76 310 57 449-47 191-143 338-102 726-187" />
+          <path d="M-80 842c210-97 359-100 521-26 182 83 328 66 471-24 199-126 344-88 714-158" />
+        </svg>
+        <div class="hero__beacon hero__beacon--one"><i></i><span>Río</span></div>
+        <div class="hero__beacon hero__beacon--two"><i></i><span>Cuenca</span></div>
+        <div class="hero__beacon hero__beacon--three"><i></i><span>Infraestructura</span></div>
+      </div>
+
+      <div class="hero__content shell">
+        <div class="hero__copy">
+          <p class="eyebrow"><span></span> Tecnología de propósito público · En desarrollo</p>
+          <h1 id="hero-title">Agentes de IA que ayudan a cuidar el agua <em>desde el espacio.</em></h1>
+          <p class="hero__lede">HIDROSAT está construyendo una red de agentes satelitales que observa ríos, embalses, cuencas e infraestructura hídrica, identifica cambios que merecen atención y ayuda a las personas a decidir dónde actuar primero.</p>
           <div class="button-row">
-            <a class="button button--signal" href="#metodo">Ver cómo funciona <span aria-hidden="true">↘</span></a>
-            <a class="text-link" href="#hidroorbit">Conocer HidroOrbit <span aria-hidden="true">→</span></a>
+            <a class="button button--signal" href="#agentes">Conocer los agentes <span aria-hidden="true">↓</span></a>
+            <a class="text-link text-link--light" href="#mision">Nuestra misión <span aria-hidden="true">↘</span></a>
           </div>
-          <p class="hero__origin">Nacido en Bahía Blanca. Diseñado para territorios de cualquier escala.</p>
+          <p class="hero__origin">Nacido en Argentina para poner la inteligencia satelital al servicio del agua y del bien común.</p>
         </div>
-        <div class="hero__visual" data-reveal data-delay="1">
-          <ObservationLens />
-          <ol class="hero__layers" aria-label="Las tres capas de HIDROSAT">
-            <li><span>01</span><strong>Observación</strong><small>Qué cambió</small></li>
-            <li><span>02</span><strong>Inferencia</strong><small>Qué podría significar</small></li>
-            <li><span>03</span><strong>Decisión</strong><small>Qué revisar primero</small></li>
-          </ol>
+
+        <div class="hero__network" role="group" aria-label="Cuatro agentes de IA satelitales en desarrollo">
+          <div class="hero__network-core">
+            <span>HIDROSAT</span>
+            <strong>Una misión</strong>
+          </div>
+          <svg viewBox="0 0 540 540" aria-hidden="true">
+            <circle cx="270" cy="270" r="176" />
+            <circle cx="270" cy="270" r="112" />
+            <path d="M270 94v352M94 270h352M145 145l250 250M395 145 145 395" />
+          </svg>
+          {agents.map((agent, index) => (
+            <div class:list={["hero__network-node", `hero__network-node--${index + 1}`]}>
+              <i></i>
+              <span>Agente {agent.number}</span>
+              <strong>{agent.title}</strong>
+            </div>
+          ))}
         </div>
       </div>
-      <div class="hero__ledger shell" data-reveal>
-        <span>Datos con procedencia</span>
-        <span>Incertidumbre visible</span>
-        <span>Revisión humana</span>
-        <span>Proyecto en desarrollo · 2026</span>
+
+      <div class="hero__proof shell">
+        <p><strong>Los satélites observan.</strong> La IA ayuda a priorizar. <em>Las personas verifican y deciden.</em></p>
+        <ol aria-label="Flujo de trabajo resumido">
+          <li>Observar</li><li>Comparar</li><li>Alertar</li><li>Verificar</li>
+        </ol>
       </div>
+      <p class="hero__caption">Imagen sintética conceptual · No representa un evento ni un resultado operativo real.</p>
     </section>
 
     <section class="mission section" id="mision" aria-labelledby="mission-title">
+      <div class="shell mission__header" data-reveal>
+        <p class="section-index">01 — QUÉ ES HIDROSAT</p>
+        <h2 id="mission-title">Una organización de propósito público. Una nueva forma de ampliar la mirada.</h2>
+      </div>
       <div class="shell mission__grid">
-        <div data-reveal>
-          <p class="section-index">01 — MISIÓN</p>
-          <h2 id="mission-title">La información existe. El desafío es convertirla en capacidad pública.</h2>
+        <div class="mission__statement" data-reveal>
+          <p class="lead">HIDROSAT es una organización tecnológica de propósito público en formación. Construimos capacidades para que comunidades, gobiernos, equipos científicos y operadores puedan comprender mejor el estado de su agua y actuar con evidencia.</p>
+          <p>No buscamos reemplazar a quienes conocen el territorio. Buscamos ayudarlos a llegar antes, enfocar recursos y convertir cada verificación en conocimiento compartido.</p>
         </div>
-        <div class="mission__body" data-reveal data-delay="1">
-          <p class="lead">Satélites, modelos climáticos, registros territoriales e inspecciones producen señales valiosas. HIDROSAT las organiza con contexto, procedencia e incertidumbre para ayudar a comprender qué cambió y decidir dónde mirar primero.</p>
-          <aside class="definition">
-            <span>En una frase</span>
-            <p>HIDROSAT es la infraestructura. HidroOrbit es su primera solución vertical en investigación y validación.</p>
-          </aside>
-        </div>
+        <aside class="agent-definition" data-reveal data-delay="1">
+          <div class="agent-definition__mark" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <p class="status-label">En palabras simples</p>
+          <h3>¿Qué es un agente de IA satelital?</h3>
+          <p>Es software especializado que analiza imágenes y datos del territorio, compara el presente con el pasado y prepara alertas explicadas para una persona.</p>
+          <strong>No es un satélite físico. No decide por su cuenta.</strong>
+        </aside>
       </div>
-      <div class="mission__anti shell" data-reveal>
-        <span>HIDROSAT no es</span>
-        <ul>
-          <li>un satélite</li>
-          <li>una aplicación única</li>
-          <li>un veredicto automático</li>
-        </ul>
+      <div class="mission__sequence shell" data-reveal role="group" aria-label="Secuencia de trabajo">
+        <div><span>01</span><strong>Observar</strong><small>Datos e imágenes</small></div>
+        <i aria-hidden="true"></i>
+        <div><span>02</span><strong>Comparar</strong><small>Cambio y contexto</small></div>
+        <i aria-hidden="true"></i>
+        <div><span>03</span><strong>Alertar</strong><small>Señal explicada</small></div>
+        <i aria-hidden="true"></i>
+        <div class="mission__sequence-human"><span>04</span><strong>Verificar</strong><small>Una persona decide</small></div>
       </div>
     </section>
 
-    <section class="method section section--ink" id="metodo" aria-labelledby="method-title">
-      <div class="method__contours" aria-hidden="true">
-        <svg viewBox="0 0 1500 820" preserveAspectRatio="none">
-          <path d="M-50 540c201-164 373-202 564-103 157 82 295 28 421-79 183-156 330-102 615-172" />
-          <path d="M-45 630c218-150 379-137 538-54 170 88 301 26 438-72 199-143 358-77 629-153" />
-          <path d="M-35 714c209-111 374-88 532-10 182 89 320 43 455-48 194-131 362-67 622-142" />
-        </svg>
-      </div>
-      <div class="shell method__intro" data-reveal>
-        <p class="section-index section-index--light">02 — CÓMO FUNCIONA</p>
-        <h2 id="method-title">Una imagen no es una explicación.<br />Una inferencia no es una sentencia.</h2>
-      </div>
-      <ol class="method__steps shell">
-        {steps.map((step, index) => (
-          <li data-reveal data-delay={String(index % 3)}>
-            <span class="method__number">{step.number}</span>
-            <div>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-      <div class="method__principle shell" data-reveal>
-        <span>Principio operativo</span>
-        <p>Cada señal, con su fuente. Cada alerta, con su incertidumbre. Cada decisión, humana.</p>
-      </div>
-    </section>
-
-    <section class="domains section" id="capacidades" aria-labelledby="domains-title">
-      <div class="shell domains__heading" data-reveal>
-        <p class="section-index">03 — CAPACIDADES</p>
+    <section class="agents section" id="agentes" aria-labelledby="agents-title">
+      <div class="agents__orbital" aria-hidden="true"></div>
+      <div class="shell agents__heading" data-reveal>
+        <p class="section-index section-index--light">02 — LA RED DE AGENTES</p>
         <div>
-          <h2 id="domains-title">Una infraestructura.<br />Cuatro dominios iniciales.</h2>
-          <p>No son cuatro productos terminados. Son áreas de desarrollo que comparten datos, método y trazabilidad.</p>
+          <h2 id="agents-title">Una red de agentes.<br />Una misión compartida.</h2>
+          <p>Cada agente se especializa en una parte del problema. Juntos convierten millones de datos en preguntas concretas que pueden verificarse en el territorio.</p>
         </div>
       </div>
-      <div class="domains__list shell">
-        {domains.map((domain) => (
-          <article data-reveal>
-            <span class="domains__number">{domain.number}</span>
-            <div>
-              <span class="status-label">Dominio de desarrollo</span>
-              <h3>{domain.title}</h3>
+      <div class="agents__grid shell">
+        {agents.map((agent, index) => (
+          <article class:list={["agent-card", `agent-card--${agent.slug}`]} data-reveal data-delay={String(index % 2)}>
+            <div class="agent-card__top">
+              <span class="agent-card__number">{agent.number}</span>
+              <span class="agent-card__status"><i></i> En desarrollo</span>
             </div>
-            <p>{domain.text}</p>
-            <span class="domains__arrow" aria-hidden="true">↗</span>
+            <div class="agent-card__visual" aria-hidden="true">
+              <AgentIcon name={agent.icon} />
+              <svg viewBox="0 0 420 170" preserveAspectRatio="none">
+                <path class="agent-card__trace" d={index === 0 ? "M-20 132c58-32 92-83 151-63 58 20 79 62 143 21 56-36 96-9 166-50" : index === 1 ? "M-20 98c62-50 111-47 153-13s79 24 128-19 98-17 177 31" : index === 2 ? "M-20 126c50 0 58-78 119-72 55 5 69 82 127 70 48-10 69-71 126-57 38 9 53 37 87 28" : "M-20 115c49-50 89-11 133-33 53-27 76-68 132-30 48 33 83 76 126 31 29-30 49-30 69-22"} />
+                <path class="agent-card__trace agent-card__trace--signal" d={index === 0 ? "M100 84c24-26 52-19 76 0s43 19 70 0" : index === 1 ? "M84 111c34-17 62-14 91 5s57 17 88-7" : index === 2 ? "M112 68c29 2 42 31 66 33s43-25 73-29" : "M82 93c27-19 47 4 71-5 31-12 43-39 76-21"} />
+              </svg>
+              <span class="agent-card__signal">{agent.signal}</span>
+            </div>
+            <h3>{agent.title}</h3>
+            <p>{agent.text}</p>
+            <div class="agent-card__limit"><span>Hasta dónde llega</span><p>{agent.limit}</p></div>
           </article>
         ))}
       </div>
     </section>
 
-    <section class="orbit section" id="hidroorbit" aria-labelledby="orbit-title">
-      <div class="shell orbit__grid">
-        <div class="orbit__copy" data-reveal>
-          <p class="section-index">04 — PRIMER PRODUCTO</p>
-          <span class="product-status"><i></i> En investigación y validación</span>
-          <h2 id="orbit-title">Qué tramo revisar primero, y por qué.</h2>
-          <p class="lead">HidroOrbit organiza señales satelitales y territoriales en casos de inspección para canales, drenajes, reservorios e infraestructura abierta.</p>
-          <p>Cada caso puede reunir la observación, la fecha, el contexto, explicaciones alternativas, incertidumbre y estado de verificación.</p>
-          <div class="orbit__boundary">
-            <span>El límite importa</span>
-            <p>Una señal compatible con humedad o agua fuera de cauce no confirma por sí sola una fuga ni su causa.</p>
+    <section class="journey section" id="como-funciona" aria-labelledby="journey-title" data-agent-story data-active-step="0">
+      <div class="shell journey__heading" data-reveal>
+        <p class="section-index">03 — CÓMO FUNCIONA</p>
+        <h2 id="journey-title">Del espacio al territorio, sin saltear a las personas.</h2>
+      </div>
+      <div class="journey__layout shell">
+        <figure class="journey__scene" data-depth-scene>
+          <div class="journey__image-wrap">
+            <Image
+              class="journey__image"
+              src={observationField}
+              alt="Representación conceptual de un territorio con agua visto desde arriba"
+              width={1200}
+              format="avif"
+              quality={78}
+              loading="lazy"
+            />
+            <div class="journey__scan" aria-hidden="true"></div>
+            <svg class="journey__geometry" viewBox="0 0 900 760" aria-hidden="true">
+              <path class="journey__route" d="M92 566c121-97 221-152 330-121 102 29 144 99 243 54 70-32 102-91 175-104" />
+              <circle class="journey__point journey__point--one" cx="421" cy="445" r="6" />
+              <circle class="journey__point journey__point--two" cx="663" cy="499" r="6" />
+              <circle class="journey__alert" cx="663" cy="499" r="32" />
+            </svg>
+            <div class="journey__readout journey__readout--observe"><span>01</span> Adquisición registrada</div>
+            <div class="journey__readout journey__readout--compare"><span>02</span> Cambio localizado</div>
+            <div class="journey__readout journey__readout--alert"><span>03</span> Caso para revisión</div>
+            <div class="journey__human"><span>04</span><strong>Verificación humana</strong><small>La decisión sigue en territorio</small></div>
           </div>
-          <a class="text-link" href="#evidencia">Ver cómo tratamos la evidencia <span aria-hidden="true">↓</span></a>
-        </div>
-        <div class="orbit__demo" data-reveal data-delay="1">
-          <EvidenceCase />
-        </div>
-      </div>
-    </section>
+          <figcaption><span>Representación conceptual</span> La secuencia explica el método; no muestra una detección real.</figcaption>
+        </figure>
 
-    <section class="evidence section" id="evidencia" aria-labelledby="evidence-title">
-      <div class="shell evidence__heading" data-reveal>
-        <p class="section-index">05 — CREDIBILIDAD</p>
-        <h2 id="evidence-title">La incertidumbre también es información.</h2>
-        <p class="lead">Cuando los datos no alcanzan, el sistema debe poder decirlo.</p>
-      </div>
-      <div class="evidence__layers shell" data-reveal>
-        <article>
-          <span class="evidence__layer-number">01</span>
-          <span class="evidence__state evidence__state--observed">Observado</span>
-          <h3>La señal</h3>
-          <p>Qué cambió en los datos, con fecha, misión, cobertura válida y condiciones de adquisición.</p>
-          <small>Hecho rastreable</small>
-        </article>
-        <article>
-          <span class="evidence__layer-number">02</span>
-          <span class="evidence__state evidence__state--inferred">Inferido</span>
-          <h3>La interpretación</h3>
-          <p>Qué explicaciones son compatibles, qué supuestos intervienen y qué tan concluyente es la evidencia.</p>
-          <small>Hipótesis explícita</small>
-        </article>
-        <article>
-          <span class="evidence__layer-number">03</span>
-          <span class="evidence__state evidence__state--human">Decisión humana</span>
-          <h3>La acción</h3>
-          <p>Qué conviene revisar, quién lo evaluó y qué resultado se confirmó o descartó en territorio.</p>
-          <small>Responsabilidad visible</small>
-        </article>
-      </div>
-      <div class="evidence__promise shell" data-reveal>
-        <p>No prometemos ver debajo del asfalto, detectar causas automáticamente ni reemplazar una inspección.</p>
-        <p>Diseñamos para observar cambios, priorizar preguntas y conservar la historia completa de cada decisión.</p>
-      </div>
-    </section>
-
-    <section class="open-core section section--deep" id="tecnologia" aria-labelledby="open-title">
-      <div class="shell open-core__grid">
-        <div data-reveal>
-          <p class="section-index section-index--light">06 — NÚCLEO TECNOLÓGICO</p>
-          <h2 id="open-title">Diseñado para ser abierto, portable y auditable.</h2>
-        </div>
-        <div class="open-core__copy" data-reveal data-delay="1">
-          <p class="lead">HIDROSAT se diseña para conservar la procedencia desde la escena satelital hasta el caso que llega a una persona.</p>
-          <p>La arquitectura proyecta estándares abiertos, conectores reemplazables y procesos reproducibles para reducir la dependencia de un único proveedor. La apertura pública se formalizará con repositorios y licencias explícitas.</p>
-        </div>
-      </div>
-      <div class="lineage shell" data-reveal>
-        <div><span>01</span><strong>Fuente</strong><small>Escena + metadatos</small></div>
-        <i aria-hidden="true"></i>
-        <div><span>02</span><strong>Proceso</strong><small>Versión + parámetros</small></div>
-        <i aria-hidden="true"></i>
-        <div><span>03</span><strong>Evidencia</strong><small>Señal + contexto</small></div>
-        <i aria-hidden="true"></i>
-        <div><span>04</span><strong>Caso</strong><small>Decisión + resultado</small></div>
-      </div>
-      <div class="open-core__standards shell" data-reveal>
-        <span>STAC</span><span>COG</span><span>GeoParquet</span><span>PostGIS</span><span>Python</span>
-        <small>Base tecnológica prevista; su uso operativo dependerá de cada producto y piloto.</small>
-      </div>
-      <p class="open-core__labs shell" data-reveal><strong>HIDROSAT Labs</strong> es el entorno interno donde estas decisiones se investigan, comparan y documentan antes de llegar a un producto.</p>
-    </section>
-
-    <section class="project-state section" id="estado" aria-labelledby="state-title">
-      <div class="shell project-state__grid">
-        <div data-reveal>
-          <p class="section-index">07 — ESTADO DEL PROYECTO</p>
-          <h2 id="state-title">Ambición global.<br />Progreso verificable.</h2>
-          <p class="lead">No mostramos métricas de impacto que todavía no existen. Mostramos dónde estamos y qué falta demostrar.</p>
-        </div>
-        <ol class="project-state__timeline" data-reveal data-delay="1">
-          <li class="is-active">
-            <span>Ahora</span>
-            <div><strong>Fundación y prototipado</strong><p>Arquitectura, investigación, identidad, primeras interfaces y criterios de validación.</p></div>
-          </li>
-          <li>
-            <span>Siguiente</span>
-            <div><strong>Territorio piloto</strong><p>Una decisión concreta, datos disponibles y un operador capaz de verificar resultados.</p></div>
-          </li>
-          <li>
-            <span>Después</span>
-            <div><strong>Evidencia de utilidad</strong><p>Medir si la priorización mejora el trabajo antes de afirmar impacto o escalar.</p></div>
-          </li>
+        <ol class="journey__steps">
+          {journeySteps.map((step, index) => (
+            <li data-story-step data-active={index === 0 ? "" : undefined}>
+              <span class="journey__number">{step.number}</span>
+              <div>
+                <span class:list={["journey__owner", { "journey__owner--human": step.owner === "Persona" }]}>{step.owner}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
+              </div>
+            </li>
+          ))}
         </ol>
       </div>
+      <p class="journey__loop shell" data-reveal>Cada verificación vuelve al sistema y ayuda a mejorar la próxima observación. <span>Observar → aprender → volver a observar.</span></p>
+    </section>
+
+    <section class="purpose" aria-labelledby="purpose-title">
+      <div class="purpose__media" aria-hidden="true">
+        <Image
+          src={fieldVerification}
+          alt=""
+          width={2048}
+          format="avif"
+          quality={82}
+          loading="lazy"
+        />
+      </div>
+      <div class="purpose__overlay"></div>
+      <div class="purpose__content shell" data-reveal>
+        <p class="section-index section-index--light">04 — PROPÓSITO</p>
+        <h2 id="purpose-title">Tecnología para el agua como bien común.</h2>
+        <p>No queremos sustituir el conocimiento local. Queremos darle una mirada más amplia a quienes ya cuidan una cuenca, operan una obra o protegen una comunidad.</p>
+        <ul>
+          <li><span>01</span>Evidencia antes que automatización</li>
+          <li><span>02</span>Decisiones humanas</li>
+          <li><span>03</span>Tecnología abierta y auditable como compromiso de diseño</li>
+        </ul>
+      </div>
+      <p class="purpose__caption">Imagen sintética conceptual · Verificación de campo representada.</p>
+    </section>
+
+    <section class="orbit section" id="hidroorbit" aria-labelledby="orbit-title">
+      <div class="shell orbit__header" data-reveal>
+        <p class="section-index">05 — PRIMERA SOLUCIÓN</p>
+        <span class="product-status"><i></i> Investigación y validación</span>
+      </div>
+      <div class="shell orbit__grid">
+        <div class="orbit__visual" data-reveal data-depth-scene>
+          <figure class="orbit__photo">
+            <Image
+              src={canalInfrastructure}
+              alt="Representación conceptual de un canal de riego en un territorio semiárido visto desde el aire"
+              width={1400}
+              format="avif"
+              quality={80}
+              loading="lazy"
+            />
+            <div class="orbit__photo-scan" aria-hidden="true"></div>
+            <div class="orbit__photo-target" aria-hidden="true"><i></i></div>
+            <figcaption>Imagen sintética conceptual · No representa un caso real.</figcaption>
+          </figure>
+          <EvidenceCase />
+        </div>
+        <div class="orbit__copy" data-reveal data-delay="1">
+          <p class="orbit__kicker">HIDROORBIT</p>
+          <h2 id="orbit-title">Qué tramo conviene inspeccionar primero, y por qué.</h2>
+          <p class="lead">HidroOrbit es la primera aplicación especializada construida sobre HIDROSAT. Analiza señales alrededor de canales, drenajes, reservorios e infraestructura hídrica abierta y las organiza como casos que un operador puede revisar.</p>
+          <aside class="orbit__definition">
+            <p><strong>HIDROSAT</strong> es la organización y la infraestructura común.</p>
+            <p><strong>HidroOrbit</strong> es su primera solución concreta.</p>
+          </aside>
+          <div class="orbit__boundary">
+            <span>El límite importa</span>
+            <p>Una anomalía de humedad o agua fuera del cauce puede justificar una inspección, pero no confirma automáticamente una fuga ni su causa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="credibility section" id="evidencia" aria-labelledby="credibility-title">
+      <div class="shell credibility__heading" data-reveal>
+        <p class="section-index">06 — CREDIBILIDAD</p>
+        <div>
+          <h2 id="credibility-title">Cuidar también es decir hasta dónde podemos ver.</h2>
+          <p>Una observación no es una explicación. Una alerta no es una sentencia.</p>
+        </div>
+      </div>
+      <div class="credibility__levels shell">
+        <article data-reveal>
+          <span class="credibility__number">01</span>
+          <div class="credibility__glyph credibility__glyph--observe" aria-hidden="true"><i></i></div>
+          <span class="credibility__label">El satélite observa</span>
+          <h3>Cambios visibles</h3>
+          <p>Agua, superficie, vegetación o señal radar, con fecha y procedencia.</p>
+        </article>
+        <article data-reveal data-delay="1">
+          <span class="credibility__number">02</span>
+          <div class="credibility__glyph credibility__glyph--interpret" aria-hidden="true"><i></i><i></i><i></i></div>
+          <span class="credibility__label">La IA interpreta</span>
+          <h3>Patrones compatibles</h3>
+          <p>Explicaciones posibles, contexto e incertidumbre expresados con claridad.</p>
+        </article>
+        <article data-reveal data-delay="2">
+          <span class="credibility__number">03</span>
+          <div class="credibility__glyph credibility__glyph--human" aria-hidden="true"><i></i></div>
+          <span class="credibility__label">La persona confirma</span>
+          <h3>Una decisión responsable</h3>
+          <p>Inspeccionar, medir, tomar muestras y decidir qué hacer en territorio.</p>
+        </article>
+      </div>
+      <aside class="labs shell" data-reveal>
+        <div>
+          <span>HIDROSAT LABS</span>
+          <h3>Probar antes de prometer.</h3>
+        </div>
+        <p>Labs es donde comparamos fuentes, modelos e interfaces, documentamos errores y buscamos que cada resultado pueda reproducirse y verificarse antes de convertirse en producto.</p>
+        <small>Estado actual: base tecnológica y primeros pilotos en preparación.</small>
+      </aside>
     </section>
 
     <section class="collaborate" id="colaborar" aria-labelledby="collaborate-title">
-      <div class="collaborate__map" aria-hidden="true">
-        <svg viewBox="0 0 1600 650" preserveAspectRatio="none">
-          <path d="M-50 477c194-190 378-232 568-100 186 129 341 96 515-54 161-139 311-131 630-63" />
-          <path d="M-60 548c206-145 371-142 554-39 195 110 359 88 527-41 181-139 327-112 655-50" />
-          <circle cx="1033" cy="323" r="7" />
-          <circle class="collaborate__ring" cx="1033" cy="323" r="36" />
+      <div class="collaborate__flow" aria-hidden="true">
+        <svg viewBox="0 0 1600 760" preserveAspectRatio="none">
+          <path d="M-80 594c224-201 417-235 605-84 173 139 329 100 499-63 158-152 318-151 664-72" />
+          <path d="M-60 680c219-144 397-143 575-35 197 119 360 87 525-43 179-141 332-116 641-43" />
+          <circle cx="1023" cy="447" r="7" />
+          <circle class="collaborate__ring" cx="1023" cy="447" r="47" />
         </svg>
       </div>
       <div class="shell collaborate__content" data-reveal>
-        <p class="section-index section-index--light">08 — COLABORACIÓN</p>
-        <h2 id="collaborate-title">Construido con quienes gestionan el agua.</h2>
-        <p>Buscamos territorios con una decisión concreta, datos disponibles y una forma real de verificar qué sucedió en campo.</p>
+        <p class="section-index section-index--light">07 — COLABORAR</p>
+        <h2 id="collaborate-title">Construyamos con quienes ya cuidan el agua.</h2>
+        <p>¿Gestionás una cuenca, un canal, un embalse o un territorio donde los cambios puedan verificarse? Buscamos un piloto acotado, con datos disponibles y una decisión concreta que podamos ayudar a mejorar.</p>
         <div class="button-row">
-          <a class="button button--paper" href="/ficha-piloto-hidrosat.md" download>Descargar ficha de piloto <span aria-hidden="true">↓</span></a>
-          <a class="text-link text-link--light" href="#estado">Conocer la etapa actual <span aria-hidden="true">↑</span></a>
+          <a class="button button--paper" href="/ficha-piloto-hidrosat.md" download>Descargar ficha del piloto <span aria-hidden="true">↓</span></a>
+          <a class="text-link text-link--light" href="#mision">Conocer la misión <span aria-hidden="true">↑</span></a>
         </div>
         <small>El canal público de recepción se incorporará cuando esté definido. No publicamos aliados hasta que exista una relación formal.</small>
       </div>
@@ -261,9 +385,9 @@ const domains = [
 
     <section class="closing" aria-label="Declaración final">
       <div class="shell" data-reveal>
-        <p>Observar mejor.</p>
-        <p>Llegar antes.</p>
-        <p>Decidir con <em>evidencia.</em></p>
+        <p>Observar.</p>
+        <p>Entender.</p>
+        <p>Actuar <em>juntos.</em></p>
       </div>
     </section>
   </main>

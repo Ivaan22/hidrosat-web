@@ -4,9 +4,9 @@ Sitio institucional público de HIDROSAT. Es independiente de `apps/control-room
 
 ## Qué comunica
 
-- HIDROSAT es la infraestructura y la misión global.
+- HIDROSAT es una organización tecnológica de propósito público en formación que construye agentes de IA satelitales para ayudar a cuidar el agua.
 - HidroOrbit es el primer producto, actualmente en investigación y validación.
-- La secuencia pública es `observación → inferencia → decisión humana`.
+- La secuencia pública es `observar → comparar → alertar → verificar`.
 - Las imágenes sintéticas y las demostraciones se rotulan como tales.
 - No se publican métricas, aliados, casos operativos ni capacidades que todavía no estén demostrados.
 
@@ -14,9 +14,9 @@ Sitio institucional público de HIDROSAT. Es independiente de `apps/control-room
 
 - Astro 7 con salida estática.
 - TypeScript estricto para componentes Astro.
-- CSS nativo, sin framework cliente y sin scripts de terceros.
+- CSS y SVG nativos para la dirección visual, con Motion vanilla usado de forma puntual para revelados y scrollytelling.
 - Sora, IBM Plex Sans e IBM Plex Mono empaquetadas localmente mediante Fontsource.
-- Sharp durante el build para convertir la imagen principal a AVIF.
+- Sharp durante el build para convertir las imágenes fuente a AVIF.
 
 ## Desarrollo local
 
@@ -77,4 +77,4 @@ El rollback se realiza desplegando un commit anterior conocido como estable. Nun
 
 ## Activos
 
-La imagen hero es una composición sintética original generada para HIDROSAT y se optimiza durante el build. No representa un territorio ni un evento real. Véase `CREDITS.md`.
+Las imágenes de la web son composiciones sintéticas originales generadas para HIDROSAT y se optimizan durante el build. No representan territorios, eventos ni resultados operativos reales. Véase `CREDITS.md`.
