@@ -121,8 +121,6 @@ const base = `${import.meta.env.BASE_URL}/`;
   </main>
 
   <script>
-    import "maplibre-gl/dist/maplibre-gl.css";
-
     const atlas = document.querySelector<HTMLElement>("[data-atlas]");
     const mapTarget = document.querySelector<HTMLElement>("#atlas-map");
     const readout = document.querySelector<HTMLElement>("[data-atlas-readout] p");
@@ -191,7 +189,6 @@ const base = `${import.meta.env.BASE_URL}/`;
         },
       });
 
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
       map.on("load", () => {
         atlas.dataset.mapReady = "";
         updateReadout("Capas públicas consultadas desde IGN · el detalle operativo permanece restringido.");
@@ -344,11 +341,9 @@ const base = `${import.meta.env.BASE_URL}/`;
 <style>
   :global(body) { background: #020812; overflow: hidden; }
   :global(.skip-link) { z-index: 100; }
-  :global(.maplibregl-ctrl-bottom-right) { bottom: 11.5rem; right: 1.35rem; }
-  :global(.maplibregl-ctrl-group) { background: rgb(3 17 31 / 0.86); border: 1px solid rgb(169 225 235 / 0.2); border-radius: 2px; box-shadow: none; }
-  :global(.maplibregl-ctrl-group button) { height: 2.5rem; width: 2.5rem; }
-  :global(.maplibregl-ctrl-group button + button) { border-color: rgb(169 225 235 / 0.15); }
-  :global(.maplibregl-ctrl-icon) { filter: invert(88%) sepia(29%) saturate(347%) hue-rotate(142deg); }
+  :global(.maplibregl-map) { height: 100%; overflow: hidden; position: relative; width: 100%; }
+  :global(.maplibregl-canvas-container), :global(.maplibregl-canvas) { inset: 0; position: absolute; }
+  :global(.maplibregl-canvas) { height: 100% !important; width: 100% !important; }
 
   .atlas {
     --atlas-phase: 0;
@@ -484,7 +479,6 @@ const base = `${import.meta.env.BASE_URL}/`;
     .atlas__timeline { grid-template-columns: 1fr; gap: 0.25rem; }
     .atlas__readout { bottom: 14.7rem; left: 1.1rem; max-width: 19rem; }
     .atlas__legend { bottom: 13rem; display: none; right: 1.1rem; }
-    :global(.maplibregl-ctrl-bottom-right) { bottom: 20.8rem; right: 1.1rem; }
   }
   @media (max-width: 560px) {
     .atlas { min-height: 72rem; }
@@ -508,7 +502,6 @@ const base = `${import.meta.env.BASE_URL}/`;
     .atlas__source-note { font-size: 0.54rem; line-height: 1.35; padding-block: 0.52rem 0.58rem; }
     .atlas__timeline { bottom: 17.2rem; }
     .atlas__readout { display: none; }
-    :global(.maplibregl-ctrl-bottom-right) { bottom: 20.5rem; }
   }
   @media (prefers-reduced-motion: reduce) {
     .atlas__field { opacity: 0.45; }
