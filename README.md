@@ -28,7 +28,7 @@ Atlas no contiene escenas satelitales, alertas reales ni un inventario operativo
 
 ## Desarrollo local
 
-Requiere Node.js 22.12 o superior y pnpm 11.17.0.
+Requiere Node.js 22.13 o superior y pnpm 11.17.0.
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -72,7 +72,7 @@ Configuración prevista para importar `Ivaan22/hidrosat-web` desde GitHub:
 
 | Campo | Valor |
 |---|---|
-| Node.js | 22.x, versión 22.12 o superior |
+| Node.js | 22.x, versión 22.13 o superior |
 | pnpm | `11.17.0` |
 | Instalación | `pnpm install --frozen-lockfile` |
 | Build | `pnpm build` |
