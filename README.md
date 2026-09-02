@@ -9,12 +9,20 @@ Sitio institucional público de HIDROSAT. Es independiente de `apps/control-room
 - La secuencia pública es `observar → comparar → alertar → verificar`.
 - Las imágenes sintéticas y las demostraciones se rotulan como tales.
 - No se publican métricas, aliados, casos operativos ni capacidades que todavía no estén demostrados.
+- `/atlas/` es una experiencia pública de exploración hídrica de Argentina: diferencia geografía publicada, interfaz conceptual y operación restringida.
+
+## HIDROSAT Atlas Argentina
+
+`/atlas/` consume capas cartográficas publicadas por el Instituto Geográfico Nacional (IGN) para ríos/cursos, cuerpos de agua/embalses y plantas potabilizadoras publicadas. Las capas se solicitan en el navegador: su disponibilidad, cobertura y vigencia dependen de la fuente externa.
+
+Atlas no contiene escenas satelitales, alertas reales ni un inventario operativo exhaustivo. La secuencia temporal y la bandeja de casos son una interfaz conceptual. Las señales detalladas, el estado operativo de infraestructura, las inspecciones y las vulnerabilidades están fuera de la superficie pública por diseño.
 
 ## Tecnología
 
 - Astro 7 con salida estática.
 - TypeScript estricto para componentes Astro.
 - CSS y SVG nativos para la dirección visual, con Motion vanilla usado de forma puntual para revelados y scrollytelling.
+- MapLibre GL JS para la cartografía del Atlas y Three.js para el campo de observación WebGL. Ambos se cargan sólo al abrir `/atlas/` y después del primer render.
 - Sora, IBM Plex Sans e IBM Plex Mono empaquetadas localmente mediante Fontsource.
 - Sharp durante el build para convertir las imágenes fuente a AVIF.
 

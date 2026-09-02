@@ -45,3 +45,12 @@ Los archivos se distribuyen dentro del build mediante paquetes Fontsource. Las l
 ## Marca
 
 La implementación web conserva el concepto de la referencia HIDROSAT 2026: agua, trayectoria orbital y nodo de observación. No sustituye silenciosamente los archivos maestros existentes de `branding/`.
+
+## HIDROSAT Atlas Argentina
+
+- Cartografía base y capas públicas: servicios WMS/WFS y TMS del Instituto Geográfico Nacional (IGN), consultados en el navegador el 2026-09-01.
+- Capas mostradas: cursos de agua, cuerpos de agua/embalses y la capa publicada de plantas potabilizadoras. Su visualización no afirma cobertura exhaustiva, estado operativo ni una alerta territorial.
+- MapLibre GL JS — licencia BSD-3-Clause; motor cartográfico de la aplicación.
+- Three.js — licencia MIT; campo de observación WebGL conceptual.
+
+Las capas remotas deben mantener atribución y no deben convertirse en un inventario público de vulnerabilidades. La secuencia de tiempo y la bandeja de casos de Atlas son diseño de interfaz conceptual, no imágenes ni alertas reales.
