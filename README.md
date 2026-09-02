@@ -58,6 +58,14 @@ Dentro de la carpeta de trabajo general, su ubicación local es:
 apps/hidrosat-web
 ```
 
+## Demo pública
+
+La demo se publica automáticamente mediante GitHub Pages cada vez que se integra un cambio a `main`:
+
+[ivaan22.github.io/hidrosat-web](https://ivaan22.github.io/hidrosat-web/)
+
+El despliegue usa `.github/workflows/deploy.yml`. Para la demo, Astro usa la base `/hidrosat-web`; al migrar a un dominio propio se debe actualizar `site`, retirar `base` y revisar los enlaces internos conforme a la guía de Astro.
+
 ## Despliegue en Hostinger
 
 Configuración prevista para importar `Ivaan22/hidrosat-web` desde GitHub:

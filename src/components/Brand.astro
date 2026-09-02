@@ -2,12 +2,19 @@
 interface Props {
   inverse?: boolean;
   compact?: boolean;
+  href?: string;
+  label?: string;
 }
 
-const { inverse = false, compact = false } = Astro.props;
+const {
+  inverse = false,
+  compact = false,
+  href = "#top",
+  label = "HIDROSAT, volver al inicio",
+} = Astro.props;
 ---
 
-<a class:list={["brand", { "brand--inverse": inverse, "brand--compact": compact }]} href="#top" aria-label="HIDROSAT, volver al inicio">
+<a class:list={["brand", { "brand--inverse": inverse, "brand--compact": compact }]} href={href} aria-label={label}>
   <svg class="brand__mark" viewBox="0 0 64 64" aria-hidden="true">
     <path class="brand__drop" d="M32 3C25 13 12 27 9 38.2 5.3 52.2 16.1 61 32 61s26.7-8.8 23-22.8C52 27 39 13 32 3Z"></path>
     <path class="brand__orbit" d="M5.5 47.5C18.8 36.1 35.5 28.7 58.5 25"></path>

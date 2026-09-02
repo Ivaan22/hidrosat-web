@@ -9,6 +9,7 @@ import observationField from "../assets/observation-field.png";
 import fieldVerification from "../assets/field-verification.png";
 import canalInfrastructure from "../assets/canal-infrastructure.png";
 
+const base = `${import.meta.env.BASE_URL}/`;
 const agents = [
   {
     number: "01",
@@ -112,7 +113,7 @@ const journeySteps = [
           <h1 id="hero-title">Agentes de IA que ayudan a cuidar el agua <em>desde el espacio.</em></h1>
           <p class="hero__lede">HIDROSAT está construyendo una red de agentes satelitales que observa ríos, embalses, cuencas e infraestructura hídrica, identifica cambios que merecen atención y ayuda a las personas a decidir dónde actuar primero.</p>
           <div class="button-row">
-            <a class="button button--signal" href="/atlas/">Explorar Atlas Argentina <span aria-hidden="true">↗</span></a>
+            <a class="button button--signal" href={`${base}atlas/`}>Explorar Atlas Argentina <span aria-hidden="true">↗</span></a>
             <a class="button button--signal" href="#agentes">Conocer los agentes <span aria-hidden="true">↓</span></a>
             <a class="text-link text-link--light" href="#mision">Nuestra misión <span aria-hidden="true">↘</span></a>
           </div>
@@ -377,7 +378,7 @@ const journeySteps = [
         <h2 id="collaborate-title">Construyamos con quienes ya cuidan el agua.</h2>
         <p>¿Gestionás una cuenca, un canal, un embalse o un territorio donde los cambios puedan verificarse? Buscamos un piloto acotado, con datos disponibles y una decisión concreta que podamos ayudar a mejorar.</p>
         <div class="button-row">
-          <a class="button button--paper" href="/ficha-piloto-hidrosat.md" download>Descargar ficha del piloto <span aria-hidden="true">↓</span></a>
+          <a class="button button--paper" href={`${base}ficha-piloto-hidrosat.md`} download>Descargar ficha del piloto <span aria-hidden="true">↓</span></a>
           <a class="text-link text-link--light" href="#mision">Conocer la misión <span aria-hidden="true">↑</span></a>
         </div>
         <small>El canal público de recepción se incorporará cuando esté definido. No publicamos aliados hasta que exista una relación formal.</small>

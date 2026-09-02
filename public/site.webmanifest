@@ -2,13 +2,13 @@
   "name": "HIDROSAT",
   "short_name": "HIDROSAT",
   "description": "Agentes de IA satelitales para ayudar a cuidar el agua.",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f5f8f6",
   "theme_color": "#041a2f",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"

@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import Brand from "../components/Brand.astro";
+
+const base = `${import.meta.env.BASE_URL}/`;
 ---
 
 <BaseLayout
@@ -16,9 +18,7 @@ import Brand from "../components/Brand.astro";
     </div>
 
     <header class="atlas__topbar">
-      <a class="atlas__brand" href="/" aria-label="Volver a la página principal de HIDROSAT">
-        <Brand inverse />
-      </a>
+      <Brand inverse href={base} label="Volver a la página principal de HIDROSAT" />
       <div class="atlas__identity" aria-label="Identidad del producto">
         <span>ATLAS ARGENTINA</span>
         <small>Centro de observación hídrica civil</small>
@@ -27,7 +27,7 @@ import Brand from "../components/Brand.astro";
         <span class="atlas__mode-dot" aria-hidden="true"></span>
         <span>Contexto público</span>
       </div>
-      <a class="atlas__return" href="/">Volver al sitio <span aria-hidden="true">↗</span></a>
+      <a class="atlas__return" href={base}>Volver al sitio <span aria-hidden="true">↗</span></a>
     </header>
 
     <section class="atlas__intro" aria-labelledby="atlas-title">
