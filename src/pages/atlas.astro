@@ -15,6 +15,24 @@ const base = `${import.meta.env.BASE_URL}/`;
     <div class="atlas__grain" aria-hidden="true"></div>
     <div class="atlas__reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
+    <section class="atlas__launch" data-launch aria-labelledby="launch-title">
+      <div class="atlas__launch-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="atlas__launch-copy">
+        <p class="atlas__launch-kicker"><span></span> HIDROSAT / ATLAS</p>
+        <p class="atlas__launch-index">EXPEDICIÓN 01 <b>·</b> ARGENTINA</p>
+        <h1 id="launch-title">El agua dibuja<br /><em>el territorio.</em></h1>
+        <p>Entrá a una experiencia para recorrer, tocar y mirar el agua desde otra escala. No es una sala de control: es una forma de aprender a hacer mejores preguntas.</p>
+        <button class="atlas__launch-button" type="button" data-launch-button>
+          <span>Iniciar exploración</span><i aria-hidden="true">↘</i>
+        </button>
+        <small>ARRASTRÁ · ELEGÍ NODOS · ACTIVÁ UNA PASADA</small>
+      </div>
+      <div class="atlas__launch-note">
+        <span>00</span>
+        <p><b>Una experiencia de producto.</b> El territorio, sus flujos y sus puntos son conceptuales: no representan alertas ni condiciones hídricas actuales.</p>
+      </div>
+    </section>
+
     <header class="atlas__topbar">
       <Brand inverse href={base} label="Volver a la página principal de HIDROSAT" />
       <div class="atlas__identity" aria-label="Identidad del Atlas">
@@ -22,7 +40,10 @@ const base = `${import.meta.env.BASE_URL}/`;
         <small>Argentina · exploración de producto</small>
       </div>
       <div class="atlas__top-actions">
-        <button class="atlas__orbit-button" type="button" data-orbit aria-label="Cambiar la orientación del territorio">
+        <button class="atlas__scan-button" type="button" data-scan disabled>
+          <i aria-hidden="true"></i> Activar pasada
+        </button>
+        <button class="atlas__orbit-button" type="button" data-orbit disabled aria-label="Cambiar la orientación del territorio">
           <i aria-hidden="true"></i> Girar territorio
         </button>
         <a class="atlas__return" href={base}>Volver al sitio <span aria-hidden="true">↗</span></a>
@@ -30,22 +51,22 @@ const base = `${import.meta.env.BASE_URL}/`;
     </header>
 
     <section class="atlas__intro" aria-labelledby="atlas-title">
-      <p class="atlas__eyebrow"><span></span> ATLAS ARGENTINA · DEMO 3D</p>
-      <h1 id="atlas-title">Un territorio que <em>se mueve con el agua.</em></h1>
-      <p>Elegí una región. Mirá cómo el territorio se abre, seguí los flujos y entendé qué podría ayudarnos a observar mejor.</p>
+      <p class="atlas__eyebrow"><span></span> ATLAS ARGENTINA · EXPERIENCIA 3D</p>
+      <h2 id="atlas-title">No mires un mapa.<br /><em>Entrá al recorrido.</em></h2>
+      <p>Elegí un nodo, seguí sus flujos y activá un campo de observación. La experiencia está hecha para entender la misión sin saber GIS.</p>
       <div class="atlas__intro-actions">
         <button class="atlas__play-button" type="button" data-start-tour>
-          Empezar recorrido <span aria-hidden="true">↓</span>
+          Ver nodos <span aria-hidden="true">↓</span>
         </button>
-        <span>Arrastrá el territorio o elegí una región.</span>
+        <span>Arrastrá, acercate o tocá un punto del territorio.</span>
       </div>
     </section>
 
     <section class="atlas__missions" aria-labelledby="missions-title">
       <div class="atlas__panel-heading">
         <div>
-          <p id="missions-title">Elegí una región</p>
-          <small>Un clic cambia la vista</small>
+          <p id="missions-title">Nodos de exploración</p>
+          <small>También podés tocarlos en el territorio</small>
         </div>
         <span data-mission-counter>01 / 04</span>
       </div>
@@ -66,7 +87,7 @@ const base = `${import.meta.env.BASE_URL}/`;
     </section>
 
     <aside class="atlas__briefing" aria-live="polite" aria-labelledby="briefing-title">
-      <div class="atlas__briefing-status"><span></span> RECORRIDO ACTIVO</div>
+      <div class="atlas__briefing-status"><span></span> NODO ACTIVO</div>
       <p class="atlas__briefing-number" data-brief-number>01</p>
       <h2 id="briefing-title" data-brief-title>Una vista para empezar.</h2>
       <p data-brief-copy>Argentina es una red de cuencas, infraestructura y comunidades. Esta vista invita a empezar por el territorio antes de sacar conclusiones.</p>
@@ -77,11 +98,11 @@ const base = `${import.meta.env.BASE_URL}/`;
     </aside>
 
     <section class="atlas__how" aria-label="Cómo explorar el Atlas">
-      <span class="atlas__how-kicker">Cómo se explora</span>
+      <span class="atlas__how-kicker">Un gesto, tres capas</span>
       <div>
-        <p><b>01</b> Elegí una región</p>
-        <p><b>02</b> SeguÍ el recorrido</p>
-        <p><b>03</b> Volvé a la vista federal</p>
+        <p><b>01</b> Elegí un punto</p>
+        <p><b>02</b> Activá la pasada</p>
+        <p><b>03</b> Formulá una pregunta</p>
       </div>
     </section>
 
@@ -111,6 +132,11 @@ const base = `${import.meta.env.BASE_URL}/`;
     const canvas = document.querySelector<HTMLCanvasElement>("[data-atlas-scene]");
     const readout = document.querySelector<HTMLElement>("[data-atlas-readout] p");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const launchScreen = document.querySelector<HTMLElement>("[data-launch]");
+    const launchButton = document.querySelector<HTMLButtonElement>("[data-launch-button]");
+    const scanButton = document.querySelector<HTMLButtonElement>("[data-scan]");
+    const orbitButton = document.querySelector<HTMLButtonElement>("[data-orbit]");
+    let launched = false;
 
     const regions: Record<RegionId, {
       index: string;
@@ -180,7 +206,25 @@ const base = `${import.meta.env.BASE_URL}/`;
       sceneState?.focus(regionId);
     };
 
-    type SceneState = { focus: (regionId: RegionId) => void; rotate: () => void };
+    type SceneState = {
+      focus: (regionId: RegionId) => void;
+      rotate: () => void;
+      launch: () => void;
+      scan: () => void;
+    };
+
+    let sceneState: SceneState | undefined;
+
+    const launchExperience = () => {
+      if (launched) return;
+      launched = true;
+      atlas?.setAttribute("data-launched", "");
+      scanButton?.removeAttribute("disabled");
+      orbitButton?.removeAttribute("disabled");
+      sceneState?.launch();
+      updateReadout("Entraste al territorio. Elegí un nodo o tocá un punto iluminado.");
+      window.setTimeout(() => launchScreen?.setAttribute("aria-hidden", "true"), reducedMotion.matches ? 0 : 720);
+    };
 
     const mountScene = async () => {
       if (!canvas || !atlas) return;
@@ -189,12 +233,16 @@ const base = `${import.meta.env.BASE_URL}/`;
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.18;
 
       const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2(0x020b11, 0.052);
       const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-      const cameraPosition = new THREE.Vector3(0, 8.8, 12.8);
+      const cameraPosition = new THREE.Vector3(0, 15.2, 18.8);
       const cameraGoal = cameraPosition.clone();
-      const lookTarget = new THREE.Vector3(0, 0.08, 0);
+      const cameraBase = cameraPosition.clone();
+      const lookTarget = new THREE.Vector3(0, -0.2, 0);
       const lookGoal = lookTarget.clone();
       camera.position.copy(cameraPosition);
 
@@ -253,21 +301,30 @@ const base = `${import.meta.env.BASE_URL}/`;
       terrainEdges.position.z = 0.01;
       terrain.add(terrainEdges);
 
+      const observationSwath = new THREE.Group();
       const observationField = new THREE.Mesh(
-        new THREE.PlaneGeometry(3.7, 17.5),
-        new THREE.MeshBasicMaterial({ color: 0x00b9e8, transparent: true, opacity: 0.075, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+        new THREE.PlaneGeometry(3.65, 0.78),
+        new THREE.MeshBasicMaterial({ color: 0x00b9e8, transparent: true, opacity: 0.12, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
       );
-      observationField.position.set(0.04, -0.2, 0.5);
-      observationField.rotation.z = -0.17;
-      terrain.add(observationField);
-
       const fieldLine = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.06, 17.7),
-        new THREE.MeshBasicMaterial({ color: 0xa9e1eb, transparent: true, opacity: 0.56, blending: THREE.AdditiveBlending, depthWrite: false }),
+        new THREE.PlaneGeometry(3.7, 0.045),
+        new THREE.MeshBasicMaterial({ color: 0xd9fbff, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending, depthWrite: false }),
       );
-      fieldLine.position.set(0.04, -0.2, 0.515);
-      fieldLine.rotation.z = -0.17;
-      terrain.add(fieldLine);
+      const fieldLens = new THREE.Group();
+      const fieldLensOuter = new THREE.Mesh(
+        new THREE.RingGeometry(0.2, 0.27, 48),
+        new THREE.MeshBasicMaterial({ color: 0xb58962, transparent: true, opacity: 0.88, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      const fieldLensCore = new THREE.Mesh(
+        new THREE.CircleGeometry(0.075, 32),
+        new THREE.MeshBasicMaterial({ color: 0xf6ffff, transparent: true, opacity: 0.94, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      fieldLensCore.position.z = 0.012;
+      fieldLens.add(fieldLensOuter, fieldLensCore);
+      observationSwath.add(observationField, fieldLine, fieldLens);
+      observationSwath.position.set(0, -7.4, 0.54);
+      observationSwath.rotation.z = -0.17;
+      terrain.add(observationSwath);
 
       const waterRoutes: Array<Array<[number, number]>> = [
         [[-0.34, 6.55], [-0.14, 5.48], [0.2, 4.36], [0.45, 3.1], [0.62, 1.85], [0.48, 0.68], [0.68, -0.52]],
@@ -277,13 +334,16 @@ const base = `${import.meta.env.BASE_URL}/`;
         [[-0.7, 4.18], [-0.5, 3.62], [-0.46, 2.9], [-0.28, 2.35]],
       ];
       const particleCurves: import("three").CatmullRomCurve3[] = [];
+      const waterMaterials: import("three").MeshBasicMaterial[] = [];
       waterRoutes.forEach((route, index) => {
         const points = route.map(([x, y]) => new THREE.Vector3(x, y, 0.52));
         const curve = new THREE.CatmullRomCurve3(points, false, "centripetal");
         particleCurves.push(curve);
+        const tubeMaterial = new THREE.MeshBasicMaterial({ color: index === 0 ? 0x1cd6f4 : 0x00a9d5, transparent: true, opacity: index === 0 ? 0.92 : 0.65, blending: THREE.AdditiveBlending, depthWrite: false });
+        waterMaterials.push(tubeMaterial);
         const tube = new THREE.Mesh(
           new THREE.TubeGeometry(curve, 96, index === 0 ? 0.075 : 0.045, 8, false),
-          new THREE.MeshBasicMaterial({ color: index === 0 ? 0x1cd6f4 : 0x00a9d5, transparent: true, opacity: index === 0 ? 0.92 : 0.65, blending: THREE.AdditiveBlending, depthWrite: false }),
+          tubeMaterial,
         );
         terrain.add(tube);
       });
@@ -295,8 +355,10 @@ const base = `${import.meta.env.BASE_URL}/`;
         patagonia: [-0.05, -4.35],
       };
       const regionMarkers = new Map<RegionId, import("three").Group>();
+      const markerTargets: import("three").Object3D[] = [];
       (Object.entries(regionPoints) as Array<[RegionId, [number, number]]>).forEach(([id, [x, y]]) => {
         const marker = new THREE.Group();
+        marker.userData.regionId = id;
         marker.position.set(x, y, 0.58);
         const ring = new THREE.Mesh(
           new THREE.RingGeometry(0.14, 0.21, 40),
@@ -311,6 +373,7 @@ const base = `${import.meta.env.BASE_URL}/`;
         marker.add(core);
         terrain.add(marker);
         regionMarkers.set(id, marker);
+        markerTargets.push(marker);
       });
 
       const particleCount = 78;
@@ -330,6 +393,13 @@ const base = `${import.meta.env.BASE_URL}/`;
       );
       focusRing.position.z = 0.6;
       terrain.add(focusRing);
+
+      const scanWave = new THREE.Mesh(
+        new THREE.RingGeometry(0.38, 0.405, 64),
+        new THREE.MeshBasicMaterial({ color: 0x5be1f2, transparent: true, opacity: 0, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      scanWave.position.set(regionPoints.federal[0], regionPoints.federal[1], 0.605);
+      terrain.add(scanWave);
 
       const observationNode = new THREE.Group();
       const nodeRing = new THREE.Mesh(
@@ -354,21 +424,49 @@ const base = `${import.meta.env.BASE_URL}/`;
       stage.add(halo);
 
       let targetRotation = regions.federal.rotation;
+      let activeRegion: RegionId = "federal";
+      let hoveredRegion: RegionId | undefined;
+      let sceneLaunched = false;
       let dragged = false;
       let dragOrigin = 0;
       let rotationOrigin = targetRotation;
+      let zoomFactor = 1;
+      let scanStarted = Number.NEGATIVE_INFINITY;
       let visible = !document.hidden;
       let frame = 0;
+      const raycaster = new THREE.Raycaster();
+      const pointer = new THREE.Vector2();
 
       const localToWorld = ([x, y]: [number, number]) => new THREE.Vector3(x, 0.2, -y);
+      const updateMarkerScales = (quiet = false) => {
+        regionMarkers.forEach((marker, id) => {
+          const targetScale = id === activeRegion ? 1.48 : id === hoveredRegion ? 1.2 : 0.82;
+          marker.scale.setScalar(THREE.MathUtils.lerp(marker.scale.x, targetScale, quiet ? 1 : 0.14));
+        });
+      };
       const setFocus = (regionId: RegionId) => {
         const region = regions[regionId];
+        activeRegion = regionId;
         targetRotation = region.rotation;
+        zoomFactor = 1;
         const point = localToWorld(region.point);
         lookGoal.set(point.x * 0.28, 0.1, point.z * 0.28);
-        cameraGoal.set(region.camera[0], region.camera[1], region.camera[2]);
+        cameraBase.set(region.camera[0], region.camera[1], region.camera[2]);
         focusRing.position.set(region.point[0], region.point[1], 0.61);
-        regionMarkers.forEach((marker, id) => marker.scale.setScalar(id === regionId ? 1.45 : 0.88));
+        scanWave.position.set(region.point[0], region.point[1], 0.605);
+        updateMarkerScales(true);
+      };
+      const triggerScan = () => {
+        if (!sceneLaunched) return;
+        scanStarted = performance.now();
+        scanWave.position.set(regionPoints[activeRegion][0], regionPoints[activeRegion][1], 0.605);
+        updateReadout("Una pasada conceptual recorre el territorio. Elegí qué pregunta te gustaría investigar.");
+      };
+      const launchScene = () => {
+        if (sceneLaunched) return;
+        sceneLaunched = true;
+        setFocus("federal");
+        triggerScan();
       };
 
       const resize = () => {
@@ -380,21 +478,39 @@ const base = `${import.meta.env.BASE_URL}/`;
 
       const renderFrame = (time = 0) => {
         const quiet = reducedMotion.matches;
+        const elapsed = time * 0.001;
+        const scanElapsed = time - scanStarted;
+        const scanning = sceneLaunched && scanElapsed >= 0 && scanElapsed < 3400;
+        const scanProgress = scanning ? scanElapsed / 3400 : 0;
+        cameraGoal.copy(cameraBase).multiplyScalar(zoomFactor);
         camera.position.lerp(cameraGoal, quiet ? 1 : 0.052);
         lookTarget.lerp(lookGoal, quiet ? 1 : 0.07);
         terrainPivot.rotation.y += (targetRotation - terrainPivot.rotation.y) * (quiet ? 1 : 0.055);
+        terrainPivot.position.y = quiet ? 0 : Math.sin(elapsed * 0.42) * (sceneLaunched ? 0.06 : 0.025);
+        terrainPivot.scale.setScalar(THREE.MathUtils.lerp(terrainPivot.scale.x, sceneLaunched ? 1 : 0.86, quiet ? 1 : 0.048));
 
-        const elapsed = time * 0.001;
+        const ambientPass = Math.sin(elapsed * 0.24) * 3.8;
+        observationSwath.position.y = scanning ? -7.25 + scanProgress * 14.5 : ambientPass;
+        observationField.material.opacity = sceneLaunched ? (scanning ? 0.18 : 0.07 + Math.sin(elapsed * 0.37) * 0.016) : 0.035;
+        fieldLine.material.opacity = sceneLaunched ? (scanning ? 0.92 : 0.44 + Math.sin(elapsed * 0.7) * 0.14) : 0.18;
+        fieldLens.rotation.z = quiet ? 0 : -elapsed * 1.2;
+        fieldLens.scale.setScalar(scanning ? 1.25 : 1 + (quiet ? 0 : Math.sin(elapsed * 1.2) * 0.08));
+        halo.rotation.z += quiet ? 0 : 0.0011;
+        observationNode.rotation.z -= quiet ? 0 : 0.011;
+        observationNode.scale.setScalar(quiet ? 1 : 1 + Math.sin(elapsed * 1.4) * 0.07);
+        focusRing.scale.setScalar(quiet ? 1 : 1 + Math.sin(elapsed * 1.7) * 0.16);
+        scanWave.scale.setScalar(scanning ? 1 + scanProgress * 6.5 : 1);
+        scanWave.material.opacity = scanning ? (1 - scanProgress) * 0.88 : 0;
+        waterMaterials.forEach((material, index) => {
+          const baseOpacity = index === 0 ? 0.92 : 0.65;
+          material.opacity = baseOpacity + (scanning ? (1 - scanProgress) * 0.22 : 0);
+        });
+        updateMarkerScales(quiet);
+
         if (!quiet) {
-          terrainPivot.position.y = Math.sin(elapsed * 0.42) * 0.055;
-          observationField.material.opacity = 0.06 + Math.sin(elapsed * 0.37) * 0.017;
-          fieldLine.material.opacity = 0.44 + Math.sin(elapsed * 0.7) * 0.14;
-          halo.rotation.z += 0.0013;
-          observationNode.rotation.z -= 0.013;
-          observationNode.scale.setScalar(1 + Math.sin(elapsed * 1.4) * 0.07);
-          focusRing.scale.setScalar(1 + Math.sin(elapsed * 1.7) * 0.16);
           particleOffsets.forEach((particle, index) => {
-            const point = particleCurves[particle.curve].getPointAt((particle.offset + elapsed * particle.speed) % 1);
+            const speedBoost = scanning ? 1.7 : 1;
+            const point = particleCurves[particle.curve].getPointAt((particle.offset + elapsed * particle.speed * speedBoost) % 1);
             particlePositions[index * 3] = point.x;
             particlePositions[index * 3 + 1] = point.y;
             particlePositions[index * 3 + 2] = point.z + Math.sin(elapsed * 2.2 + index) * 0.014;
@@ -420,26 +536,63 @@ const base = `${import.meta.env.BASE_URL}/`;
         renderFrame();
         resume();
       };
-
+      const pickRegion = (event: PointerEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, camera);
+        const hit = raycaster.intersectObjects(markerTargets, true)[0];
+        let target: import("three").Object3D | undefined = hit?.object;
+        while (target && !target.userData.regionId) target = target.parent ?? undefined;
+        return target?.userData.regionId as RegionId | undefined;
+      };
+      const setHoveredRegion = (regionId?: RegionId) => {
+        if (hoveredRegion === regionId) return;
+        hoveredRegion = regionId;
+        canvas.style.cursor = regionId ? "pointer" : "grab";
+      };
+      const chooseRegion = (regionId: RegionId) => {
+        setFocus(regionId);
+        updateRegion(regionId);
+        triggerScan();
+      };
       const onPointerDown = (event: PointerEvent) => {
+        if (!sceneLaunched) return;
         dragged = true;
         dragOrigin = event.clientX;
         rotationOrigin = targetRotation;
         canvas.setPointerCapture?.(event.pointerId);
       };
       const onPointerMove = (event: PointerEvent) => {
-        if (!dragged) return;
-        targetRotation = rotationOrigin + (event.clientX - dragOrigin) * 0.008;
+        if (!sceneLaunched) return;
+        if (dragged) {
+          targetRotation = rotationOrigin + (event.clientX - dragOrigin) * 0.008;
+          return;
+        }
+        setHoveredRegion(pickRegion(event));
       };
       const onPointerUp = (event: PointerEvent) => {
+        if (!sceneLaunched) return;
+        const wasClick = Math.abs(event.clientX - dragOrigin) < 8;
         dragged = false;
         canvas.releasePointerCapture?.(event.pointerId);
+        if (wasClick) {
+          const regionId = pickRegion(event);
+          if (regionId) chooseRegion(regionId);
+        }
+      };
+      const onWheel = (event: WheelEvent) => {
+        if (!sceneLaunched) return;
+        event.preventDefault();
+        zoomFactor = THREE.MathUtils.clamp(zoomFactor + event.deltaY * 0.0008, 0.68, 1.32);
       };
 
       canvas.addEventListener("pointerdown", onPointerDown);
       canvas.addEventListener("pointermove", onPointerMove);
       canvas.addEventListener("pointerup", onPointerUp);
       canvas.addEventListener("pointercancel", onPointerUp);
+      canvas.addEventListener("pointerleave", () => setHoveredRegion());
+      canvas.addEventListener("wheel", onWheel, { passive: false });
       window.addEventListener("resize", resize);
       document.addEventListener("visibilitychange", () => {
         visible = !document.hidden;
@@ -448,7 +601,7 @@ const base = `${import.meta.env.BASE_URL}/`;
       reducedMotion.addEventListener("change", refreshMotion);
 
       resize();
-      setFocus("federal");
+      focusRing.position.set(regionPoints.federal[0], regionPoints.federal[1], 0.61);
       particleOffsets.forEach((particle, index) => {
         const point = particleCurves[particle.curve].getPointAt(particle.offset);
         particlePositions[index * 3] = point.x;
@@ -456,21 +609,23 @@ const base = `${import.meta.env.BASE_URL}/`;
         particlePositions[index * 3 + 2] = point.z;
       });
       particleGeometry.attributes.position.needsUpdate = true;
+      if (launched) launchScene();
       renderFrame();
       resume();
       atlas.dataset.sceneReady = "";
-      updateReadout("Territorio listo. Elegí una región para continuar.");
+      updateReadout(launched ? "Entraste al territorio. Elegí un nodo o tocá un punto iluminado." : "Atlas listo. Iniciá la exploración cuando quieras.");
 
       return {
         focus: setFocus,
         rotate: () => {
           targetRotation += Math.PI * 0.52;
-          updateReadout("Orientación del territorio actualizada.");
+          updateReadout("Orientación del territorio actualizada. Acercate con la rueda si querés mirar más de cerca.");
         },
+        launch: launchScene,
+        scan: triggerScan,
       } satisfies SceneState;
     };
 
-    let sceneState: SceneState | undefined;
     const startAtlas = () => {
       const load = () => {
         void mountScene().then((state) => {
@@ -483,17 +638,24 @@ const base = `${import.meta.env.BASE_URL}/`;
       window.setTimeout(load, 0);
     };
 
+    launchButton?.addEventListener("click", launchExperience);
     document.querySelectorAll<HTMLButtonElement>("[data-region-button]").forEach((button) => {
       button.addEventListener("click", () => {
         const regionId = button.dataset.regionButton as RegionId | undefined;
+        if (!launched) launchExperience();
         if (regionId) updateRegion(regionId, sceneState);
       });
     });
     document.querySelector<HTMLButtonElement>("[data-start-tour]")?.addEventListener("click", () => {
       document.querySelector<HTMLElement>(".atlas__missions")?.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "nearest" });
-      updateReadout("Elegí una región. Cada recorrido explica una manera de pensar el agua.");
+      updateReadout("Elegí un nodo o tocá un punto luminoso. Cada recorrido abre una pregunta diferente.");
     });
     document.querySelector<HTMLButtonElement>("[data-orbit]")?.addEventListener("click", () => sceneState?.rotate());
+    scanButton?.addEventListener("click", () => {
+      sceneState?.scan();
+      scanButton.classList.add("is-active");
+      window.setTimeout(() => scanButton.classList.remove("is-active"), 3400);
+    });
 
     const safetyToggle = document.querySelector<HTMLButtonElement>("[data-safety-toggle]");
     const safetyPanel = document.querySelector<HTMLElement>("[data-safety-panel]");
@@ -533,6 +695,43 @@ const base = `${import.meta.env.BASE_URL}/`;
   .atlas__grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.83' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; opacity: 0.14; pointer-events: none; z-index: 3; }
 
   .atlas__topbar, .atlas__intro, .atlas__missions, .atlas__briefing, .atlas__how, .atlas__readout, .atlas__legend, .atlas__safety, .atlas__caption { position: absolute; z-index: 4; }
+  .atlas__launch { inset: 0; overflow: hidden; position: absolute; z-index: 8; }
+  .atlas__launch::before, .atlas__launch::after { content: ""; pointer-events: none; position: absolute; }
+  .atlas__launch::before { background: radial-gradient(circle at 57% 52%, rgb(0 200 234 / 0.12), transparent 26%), linear-gradient(90deg, rgb(1 8 13 / 0.86) 0%, rgb(1 8 13 / 0.5) 43%, rgb(1 8 13 / 0.18) 100%); inset: 0; }
+  .atlas__launch::after { border: 1px solid rgb(117 220 234 / 0.18); height: min(62vw, 49rem); left: 58%; top: 48%; transform: translate(-50%, -50%) rotate(45deg); width: min(62vw, 49rem); }
+  .atlas__launch-copy { left: clamp(1.25rem, 8.2vw, 9.8rem); max-width: 34rem; position: absolute; top: 50%; transform: translateY(-47%); z-index: 2; }
+  .atlas__launch-kicker, .atlas__launch-index, .atlas__launch small { font-family: var(--font-mono); font-size: 0.63rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+  .atlas__launch-kicker { align-items: center; color: var(--atlas-cyan); display: flex; gap: 0.62rem; margin: 0; }
+  .atlas__launch-kicker span { background: var(--atlas-cyan); box-shadow: 0 0 1rem var(--atlas-cyan); height: 0.38rem; width: 0.38rem; }
+  .atlas__launch-index { color: var(--atlas-muted); margin: 1.15rem 0 0; }
+  .atlas__launch-index b { color: var(--atlas-amber); font-size: 1rem; }
+  .atlas__launch h1 { font-size: clamp(3.3rem, 6.45vw, 6.65rem); font-weight: 570; letter-spacing: -0.083em; line-height: 0.86; margin: 1.2rem 0 0; max-width: 7.4ch; }
+  .atlas__launch h1 em { color: var(--atlas-cyan); font-style: normal; }
+  .atlas__launch h1 + p { color: #c8dcdd; font-size: clamp(0.94rem, 1.15vw, 1.07rem); line-height: 1.6; margin: 1.6rem 0 0; max-width: 43ch; }
+  .atlas__launch-button { align-items: center; background: var(--atlas-cyan); border: 1px solid var(--atlas-cyan); color: #00141d; cursor: pointer; display: inline-flex; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; gap: 2rem; letter-spacing: 0.08em; margin-top: 1.7rem; min-height: 3.4rem; padding: 0 0.85rem 0 1.25rem; text-transform: uppercase; transition: background 180ms ease, transform 180ms ease; }
+  .atlas__launch-button i { align-items: center; background: rgb(0 32 44 / 0.12); display: inline-flex; font-size: 1.1rem; font-style: normal; height: 2.2rem; justify-content: center; width: 2.2rem; }
+  .atlas__launch-button:hover { background: #d9fbff; transform: translateY(-3px); }
+  .atlas__launch small { color: var(--atlas-muted); display: block; margin-top: 1.05rem; }
+  .atlas__launch-note { border-left: 1px solid var(--atlas-line); bottom: clamp(1.5rem, 4vw, 4rem); display: grid; gap: 0.9rem; grid-template-columns: auto 15rem; padding-left: 0.9rem; position: absolute; right: clamp(1.25rem, 4vw, 4.5rem); width: min(26rem, 31vw); z-index: 2; }
+  .atlas__launch-note > span { color: rgb(169 225 235 / 0.34); font-family: var(--font-display); font-size: 2.3rem; font-weight: 600; letter-spacing: -0.1em; line-height: 0.8; }
+  .atlas__launch-note p { color: var(--atlas-muted); font-size: 0.68rem; line-height: 1.55; margin: 0; }
+  .atlas__launch-note b { color: var(--atlas-paper); font-weight: 600; }
+  .atlas__launch-orbit { border: 1px solid rgb(0 200 234 / 0.25); border-radius: 50%; height: min(43vw, 37rem); left: 57%; position: absolute; top: 50%; transform: translate(-50%, -50%) rotate(-20deg); width: min(43vw, 37rem); }
+  .atlas__launch-orbit::before, .atlas__launch-orbit::after { border: 1px solid rgb(91 225 242 / 0.16); border-radius: 50%; content: ""; inset: 13%; position: absolute; }
+  .atlas__launch-orbit::after { inset: 30%; }
+  .atlas__launch-orbit i { background: var(--atlas-cyan); border-radius: 50%; box-shadow: 0 0 1.3rem var(--atlas-cyan); height: 0.55rem; position: absolute; width: 0.55rem; }
+  .atlas__launch-orbit i:nth-child(1) { left: 5%; top: 18%; }
+  .atlas__launch-orbit i:nth-child(2) { right: 16%; top: 27%; }
+  .atlas__launch-orbit i:nth-child(3) { bottom: 9%; left: 39%; }
+  .atlas[data-launched] .atlas__launch { opacity: 0; pointer-events: none; transform: scale(1.035); transition: opacity 560ms ease, transform 880ms cubic-bezier(.16, 1, .3, 1); }
+  .atlas:not([data-launched]) .atlas__topbar { opacity: 0.42; pointer-events: none; }
+  .atlas:not([data-launched]) .atlas__intro, .atlas:not([data-launched]) .atlas__missions, .atlas:not([data-launched]) .atlas__briefing, .atlas:not([data-launched]) .atlas__readout, .atlas:not([data-launched]) .atlas__legend { opacity: 0; pointer-events: none; transform: translateY(1rem); }
+  .atlas:not([data-launched]) .atlas__how, .atlas:not([data-launched]) .atlas__caption { opacity: 0; pointer-events: none; }
+  .atlas[data-launched] .atlas__intro, .atlas[data-launched] .atlas__missions, .atlas[data-launched] .atlas__briefing, .atlas[data-launched] .atlas__readout, .atlas[data-launched] .atlas__legend { animation: atlas-interface-in 720ms cubic-bezier(.16, 1, .3, 1) both; }
+  .atlas[data-launched] .atlas__how, .atlas[data-launched] .atlas__caption { opacity: 1; transition: opacity 720ms ease 220ms; }
+  .atlas[data-launched] .atlas__missions { animation-delay: 110ms; }
+  .atlas[data-launched] .atlas__briefing { animation-delay: 160ms; }
+  .atlas[data-launched] .atlas__legend, .atlas[data-launched] .atlas__readout { animation-delay: 220ms; }
   .atlas__topbar {
     align-items: center;
     border-bottom: 1px solid rgb(176 234 241 / 0.14);
@@ -550,19 +749,24 @@ const base = `${import.meta.env.BASE_URL}/`;
   .atlas__identity span, .atlas__eyebrow, .atlas__panel-heading p, .atlas__briefing-status, .atlas__how-kicker { color: var(--atlas-cyan); font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
   .atlas__identity small { color: var(--atlas-muted); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.04em; margin-top: 0.24rem; }
   .atlas__top-actions { align-items: center; display: flex; gap: 1.25rem; justify-content: end; }
-  .atlas__orbit-button, .atlas__return { align-items: center; color: var(--atlas-paper); display: inline-flex; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; gap: 0.54rem; letter-spacing: 0.08em; min-height: 2.75rem; text-decoration: none; text-transform: uppercase; }
+  .atlas__scan-button, .atlas__orbit-button, .atlas__return { align-items: center; color: var(--atlas-paper); display: inline-flex; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; gap: 0.54rem; letter-spacing: 0.08em; min-height: 2.75rem; text-decoration: none; text-transform: uppercase; }
+  .atlas__scan-button { background: rgb(0 185 232 / 0.1); border: 1px solid rgb(0 200 234 / 0.45); color: var(--atlas-cyan); cursor: pointer; padding: 0 0.75rem; transition: background 180ms ease, color 180ms ease, transform 180ms ease; }
+  .atlas__scan-button i { border: 1px solid currentColor; border-radius: 50%; box-shadow: 0 0 0.75rem currentColor; height: 0.55rem; position: relative; width: 0.55rem; }
+  .atlas__scan-button i::after { background: currentColor; border-radius: 50%; content: ""; height: 0.16rem; left: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); width: 0.16rem; }
+  .atlas__scan-button:hover, .atlas__scan-button.is-active { background: var(--atlas-cyan); color: #012530; transform: translateY(-1px); }
+  .atlas__scan-button:disabled, .atlas__orbit-button:disabled { cursor: default; opacity: 0.32; }
   .atlas__orbit-button { background: transparent; border: 0; cursor: pointer; padding: 0; }
   .atlas__orbit-button i { border: 1px solid var(--atlas-cyan); border-radius: 50%; height: 0.78rem; position: relative; width: 0.78rem; }
   .atlas__orbit-button i::after { background: var(--atlas-cyan); border-radius: 50%; content: ""; height: 0.16rem; position: absolute; right: -0.07rem; top: 0.04rem; width: 0.16rem; }
   .atlas__return { border-bottom: 1px solid rgb(238 250 248 / 0.45); }
   .atlas__return span { color: var(--atlas-cyan); }
-  .atlas__orbit-button:hover, .atlas__return:hover { color: var(--atlas-cyan); }
+  .atlas__orbit-button:hover:not(:disabled), .atlas__return:hover { color: var(--atlas-cyan); }
 
   .atlas__intro { left: clamp(1.25rem, 5.8vw, 7.2rem); max-width: 30rem; top: clamp(7.7rem, 17vh, 12.3rem); }
   .atlas__eyebrow { align-items: center; display: flex; gap: 0.6rem; margin: 0 0 1.1rem; }
   .atlas__eyebrow span { background: var(--atlas-cyan); box-shadow: 0 0 1rem var(--atlas-cyan); height: 0.36rem; width: 0.36rem; }
-  .atlas__intro h1 { font-size: clamp(2.8rem, 5.2vw, 5.2rem); font-weight: 580; letter-spacing: -0.072em; line-height: 0.93; margin: 0; max-width: 8.8ch; }
-  .atlas__intro h1 em { color: var(--atlas-cyan); font-style: normal; }
+  .atlas__intro h2 { font-size: clamp(2.8rem, 5.2vw, 5.2rem); font-weight: 580; letter-spacing: -0.072em; line-height: 0.93; margin: 0; max-width: 8.8ch; }
+  .atlas__intro h2 em { color: var(--atlas-cyan); font-style: normal; }
   .atlas__intro > p:not(.atlas__eyebrow) { color: #d0e1e1; font-size: clamp(0.98rem, 1.25vw, 1.12rem); line-height: 1.6; margin: 1.5rem 0 0; max-width: 40ch; }
   .atlas__intro-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem 1.2rem; margin-top: 1.6rem; }
   .atlas__play-button { align-items: center; background: var(--atlas-cyan); border: 1px solid var(--atlas-cyan); color: #01212e; cursor: pointer; display: inline-flex; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; gap: 1rem; letter-spacing: 0.08em; min-height: 3.05rem; padding: 0 1rem 0 1.15rem; text-transform: uppercase; transition: transform 180ms ease, background 180ms ease; }
@@ -628,6 +832,7 @@ const base = `${import.meta.env.BASE_URL}/`;
   @media (max-width: 1050px) {
     .atlas__topbar { grid-template-columns: 1fr auto; }
     .atlas__identity { display: none; }
+    .atlas__launch-note { width: min(22rem, 37vw); }
     .atlas__briefing { right: 1.25rem; top: 7.4rem; }
     .atlas__how { display: none; }
   }
@@ -638,13 +843,15 @@ const base = `${import.meta.env.BASE_URL}/`;
     .atlas__wash { background: linear-gradient(180deg, rgb(0 9 14 / 0.5) 0%, transparent 38%, rgb(0 9 14 / 0.78) 73%, #020a10 100%); }
     .atlas__topbar { left: 1.1rem; padding: 1rem 0; right: 1.1rem; }
     .atlas__topbar :global(.brand__name) { font-size: 1.02rem; }
+    .atlas__scan-button { font-size: 0; gap: 0; min-width: 2.75rem; padding: 0; }
+    .atlas__scan-button i { height: 0.78rem; width: 0.78rem; }
     .atlas__orbit-button { font-size: 0; gap: 0; min-width: 2.75rem; }
     .atlas__orbit-button i { height: 1rem; width: 1rem; }
     .atlas__return { font-size: 0; min-width: 1.55rem; }
     .atlas__return span { font-size: 0.95rem; }
     .atlas__top-actions { gap: 0.75rem; }
     .atlas__intro { left: 1.25rem; max-width: 22rem; right: 1.25rem; top: 6.9rem; }
-    .atlas__intro h1 { font-size: clamp(2.65rem, 13vw, 4.25rem); max-width: 8.5ch; }
+    .atlas__intro h2 { font-size: clamp(2.65rem, 13vw, 4.25rem); max-width: 8.5ch; }
     .atlas__intro > p:not(.atlas__eyebrow) { font-size: 0.92rem; margin-top: 1rem; max-width: 34ch; }
     .atlas__intro-actions > span { display: none; }
     .atlas__briefing { bottom: 14rem; left: 1.25rem; max-width: none; padding: 0.8rem 0.9rem; right: 1.25rem; top: auto; }
@@ -663,11 +870,19 @@ const base = `${import.meta.env.BASE_URL}/`;
     .atlas__caption { display: none; }
     .atlas__safety { bottom: 3.85rem; left: 1.25rem; max-width: none; right: 1.25rem; }
     .atlas__reticle { height: 66vw; left: 52%; top: 38%; width: 66vw; }
+    .atlas__launch::before { background: linear-gradient(180deg, rgb(1 8 13 / 0.7) 0%, rgb(1 8 13 / 0.26) 46%, rgb(1 8 13 / 0.92) 100%); }
+    .atlas__launch::after { height: 104vw; left: 55%; top: 38%; width: 104vw; }
+    .atlas__launch-copy { left: 1.25rem; right: 1.25rem; top: 16%; transform: none; }
+    .atlas__launch h1 { font-size: clamp(3.4rem, 16vw, 5.15rem); }
+    .atlas__launch h1 + p { font-size: 0.9rem; margin-top: 1.2rem; max-width: 34ch; }
+    .atlas__launch-button { margin-top: 1.3rem; min-height: 3.2rem; }
+    .atlas__launch-note { bottom: 1.55rem; grid-template-columns: auto 1fr; left: 1.25rem; right: 1.25rem; width: auto; }
+    .atlas__launch-orbit { height: 96vw; left: 57%; top: 47%; width: 96vw; }
   }
 
   @media (max-width: 390px) {
     .atlas { min-height: 61rem; }
-    .atlas__intro h1 { font-size: 2.55rem; }
+    .atlas__intro h2 { font-size: 2.55rem; }
     .atlas__briefing { bottom: 14.7rem; }
     .atlas__mission-list { grid-template-columns: 1fr; }
     .atlas__mission:nth-child(odd) { border-right: 0; }
@@ -676,7 +891,12 @@ const base = `${import.meta.env.BASE_URL}/`;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .atlas__play-button, .atlas__mission, .atlas__mission i { transition: none; }
+    .atlas__play-button, .atlas__mission, .atlas__mission i, .atlas__launch-button, .atlas__scan-button, .atlas__launch { animation: none; transition: none; }
     .atlas__grain { opacity: 0.08; }
+  }
+
+  @keyframes atlas-interface-in {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
