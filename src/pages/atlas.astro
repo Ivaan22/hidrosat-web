@@ -6,505 +6,677 @@ const base = `${import.meta.env.BASE_URL}/`;
 ---
 
 <BaseLayout
-  title="HIDROSAT Atlas Argentina — Observación hídrica pública"
-  description="Atlas público en desarrollo para explorar ríos, cuerpos de agua, embalses y activos hídricos publicados de Argentina con trazabilidad y límites claros."
+  title="HIDROSAT Atlas Argentina — Exploración hídrica 3D"
+  description="Una demostración 3D conceptual para explorar cómo HIDROSAT transforma observación del territorio en mejores preguntas sobre el agua."
 >
-  <main id="main" class="atlas" data-atlas>
-    <div class="atlas__map-wrap" aria-hidden="true">
-      <div id="atlas-map" class="atlas__map"></div>
-      <canvas id="atlas-field" class="atlas__field"></canvas>
-      <div class="atlas__grain"></div>
-      <div class="atlas__vignette"></div>
-    </div>
+  <main id="main" class="atlas" data-atlas data-region="federal">
+    <canvas class="atlas__scene" data-atlas-scene aria-hidden="true"></canvas>
+    <div class="atlas__wash" aria-hidden="true"></div>
+    <div class="atlas__grain" aria-hidden="true"></div>
+    <div class="atlas__reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
     <header class="atlas__topbar">
       <Brand inverse href={base} label="Volver a la página principal de HIDROSAT" />
-      <div class="atlas__identity" aria-label="Identidad del producto">
-        <span>ATLAS ARGENTINA</span>
-        <small>Centro de observación hídrica civil</small>
+      <div class="atlas__identity" aria-label="Identidad del Atlas">
+        <span>HIDROSAT · ATLAS</span>
+        <small>Argentina · exploración de producto</small>
       </div>
-      <div class="atlas__mode">
-        <span class="atlas__mode-dot" aria-hidden="true"></span>
-        <span>Contexto público</span>
+      <div class="atlas__top-actions">
+        <button class="atlas__orbit-button" type="button" data-orbit aria-label="Cambiar la orientación del territorio">
+          <i aria-hidden="true"></i> Girar territorio
+        </button>
+        <a class="atlas__return" href={base}>Volver al sitio <span aria-hidden="true">↗</span></a>
       </div>
-      <a class="atlas__return" href={base}>Volver al sitio <span aria-hidden="true">↗</span></a>
     </header>
 
     <section class="atlas__intro" aria-labelledby="atlas-title">
-      <p class="atlas__eyebrow"><span></span> EXPERIMENTO DE PRODUCTO · V0.1</p>
-      <h1 id="atlas-title">El pulso del <span class="atlas__mobile-break">agua</span><br /><em>en Argentina.</em></h1>
-      <p>Una primera capa pública para explorar la geografía hídrica del país, entender de dónde viene cada dato y distinguir entre contexto abierto y operación sensible.</p>
-      <button class="atlas__access" type="button" aria-expanded="false" aria-controls="atlas-access-panel" data-access-toggle>
-        Cómo se protege la información <span aria-hidden="true">+</span>
-      </button>
-      <div class="atlas__access-panel" id="atlas-access-panel" hidden data-access-panel>
-        <p><strong>Abierto:</strong> geografía y activos ya publicados por sus fuentes.</p>
-        <p><strong>Restringido:</strong> alertas, detalle operativo, historial de inspecciones y cualquier información que eleve riesgos sobre infraestructura.</p>
+      <p class="atlas__eyebrow"><span></span> ATLAS ARGENTINA · DEMO 3D</p>
+      <h1 id="atlas-title">Un territorio que <em>se mueve con el agua.</em></h1>
+      <p>Elegí una región. Mirá cómo el territorio se abre, seguí los flujos y entendé qué podría ayudarnos a observar mejor.</p>
+      <div class="atlas__intro-actions">
+        <button class="atlas__play-button" type="button" data-start-tour>
+          Empezar recorrido <span aria-hidden="true">↓</span>
+        </button>
+        <span>Arrastrá el territorio o elegí una región.</span>
       </div>
     </section>
 
-    <section class="atlas__layers" aria-label="Capas públicas del Atlas">
-      <div class="atlas__panel-title">
-        <span>Capas abiertas</span>
-        <small>Seleccionar para ver u ocultar</small>
-      </div>
-      <div class="atlas__layer-list" role="group" aria-label="Control de capas">
-        <button class="atlas-layer is-active" type="button" aria-pressed="true" data-layer="rivers">
-          <i class="atlas-layer__mark atlas-layer__mark--river" aria-hidden="true"></i>
-          <span><strong>Ríos y cursos</strong><small>Hidrografía publicada</small></span>
-          <b aria-hidden="true">01</b>
-        </button>
-        <button class="atlas-layer is-active" type="button" aria-pressed="true" data-layer="water-bodies">
-          <i class="atlas-layer__mark atlas-layer__mark--body" aria-hidden="true"></i>
-          <span><strong>Agua y embalses</strong><small>Espejos y reservorios</small></span>
-          <b aria-hidden="true">02</b>
-        </button>
-        <button class="atlas-layer is-active" type="button" aria-pressed="true" data-layer="water-works">
-          <i class="atlas-layer__mark atlas-layer__mark--works" aria-hidden="true"></i>
-          <span><strong>Plantas publicadas</strong><small>Registro base a verificar</small></span>
-          <b aria-hidden="true">03</b>
-        </button>
-      </div>
-      <p class="atlas__source-note"><span aria-hidden="true">i</span> Las capas se consultan desde servicios geográficos del IGN. La cobertura, fecha y exactitud dependen de cada fuente.</p>
-    </section>
-
-    <section class="atlas__missions" aria-label="Vistas del territorio">
-      <p>Vistas de cuenca</p>
-      <div role="group" aria-label="Enfocar región">
-        <button type="button" data-focus="national" aria-pressed="true">Federal</button>
-        <button type="button" data-focus="plata" aria-pressed="false">Del Plata</button>
-        <button type="button" data-focus="cuyo" aria-pressed="false">Cuyo</button>
-        <button type="button" data-focus="patagonia" aria-pressed="false">Patagonia</button>
-      </div>
-    </section>
-
-    <aside class="atlas__review" aria-labelledby="review-title">
-      <div class="atlas__review-head">
+    <section class="atlas__missions" aria-labelledby="missions-title">
+      <div class="atlas__panel-heading">
         <div>
-          <p>Estado de operación</p>
-          <h2 id="review-title">Señales para revisar</h2>
+          <p id="missions-title">Elegí una región</p>
+          <small>Un clic cambia la vista</small>
         </div>
-        <span class="atlas__restricted">Restringido</span>
+        <span data-mission-counter>01 / 04</span>
       </div>
-      <div class="atlas__locked-state">
-        <div class="atlas__locked-icon" aria-hidden="true"><i></i><i></i><i></i></div>
-        <p><strong>La bandeja de casos no es pública.</strong> Las señales generadas por sensores o agentes deben mostrar evidencia, incertidumbre y revisión humana antes de cualquier decisión.</p>
+      <div class="atlas__mission-list" role="group" aria-label="Recorridos disponibles">
+        <button class="atlas__mission is-active" type="button" data-region-button="federal" aria-pressed="true">
+          <span>01</span><strong>Vista federal</strong><i aria-hidden="true">↗</i>
+        </button>
+        <button class="atlas__mission" type="button" data-region-button="litoral" aria-pressed="false">
+          <span>02</span><strong>Litoral</strong><i aria-hidden="true">↗</i>
+        </button>
+        <button class="atlas__mission" type="button" data-region-button="cuyo" aria-pressed="false">
+          <span>03</span><strong>Cuyo</strong><i aria-hidden="true">↗</i>
+        </button>
+        <button class="atlas__mission" type="button" data-region-button="patagonia" aria-pressed="false">
+          <span>04</span><strong>Patagonia</strong><i aria-hidden="true">↗</i>
+        </button>
       </div>
-      <div class="atlas__review-rule">
-        <span>Regla de producto</span>
-        <p>Una señal no confirma una fuga, contaminación, peligro ni responsable.</p>
+    </section>
+
+    <aside class="atlas__briefing" aria-live="polite" aria-labelledby="briefing-title">
+      <div class="atlas__briefing-status"><span></span> RECORRIDO ACTIVO</div>
+      <p class="atlas__briefing-number" data-brief-number>01</p>
+      <h2 id="briefing-title" data-brief-title>Una vista para empezar.</h2>
+      <p data-brief-copy>Argentina es una red de cuencas, infraestructura y comunidades. Esta vista invita a empezar por el territorio antes de sacar conclusiones.</p>
+      <div class="atlas__briefing-rule">
+        <i aria-hidden="true"></i>
+        <p data-brief-rule>El relieve y los flujos son una representación conceptual: no muestran mediciones ni alertas en vivo.</p>
       </div>
     </aside>
 
-    <section class="atlas__timeline" aria-labelledby="timeline-title">
-      <div class="atlas__timeline-label">
-        <p id="timeline-title">Tiempo de observación</p>
-        <strong data-time-label>Línea base</strong>
+    <section class="atlas__how" aria-label="Cómo explorar el Atlas">
+      <span class="atlas__how-kicker">Cómo se explora</span>
+      <div>
+        <p><b>01</b> Elegí una región</p>
+        <p><b>02</b> SeguÍ el recorrido</p>
+        <p><b>03</b> Volvé a la vista federal</p>
       </div>
-      <div class="atlas__timeline-control">
-        <input id="atlas-time" type="range" min="0" max="3" step="1" value="0" aria-describedby="atlas-time-help" />
-        <div class="atlas__ticks" aria-hidden="true"><span>01</span><span>02</span><span>03</span><span>04</span></div>
-      </div>
-      <p id="atlas-time-help" class="atlas__timeline-help">Secuencia conceptual de interfaz. No representa una alerta ni una adquisición satelital real.</p>
     </section>
 
     <div class="atlas__readout" role="status" aria-live="polite" data-atlas-readout>
-      <span></span>
-      <p>Preparando capas públicas…</p>
+      <i aria-hidden="true"></i>
+      <p>Preparando la mesa de agua…</p>
     </div>
 
-    <div class="atlas__legend" aria-label="Leyenda de estados">
-      <span><i class="atlas__legend-open"></i> Fuente publicada</span>
-      <span><i class="atlas__legend-review"></i> Revisión humana</span>
-      <span><i class="atlas__legend-restricted"></i> Acceso restringido</span>
+    <div class="atlas__legend" aria-label="Significado de la demostración">
+      <span><i class="atlas__legend-water"></i> Flujo de agua conceptual</span>
+      <span><i class="atlas__legend-field"></i> Campo de observación</span>
+      <button type="button" data-safety-toggle aria-expanded="false" aria-controls="atlas-safety">Límites de la demo <b aria-hidden="true">+</b></button>
     </div>
+
+    <section class="atlas__safety" id="atlas-safety" hidden data-safety-panel>
+      <p><strong>Esto no es una sala de control real.</strong> El territorio, las rutas de agua y los nodos de esta experiencia están diseñados para explicar una idea de producto. Las capas publicadas, la evidencia de campo y cualquier operación sensible requieren fuentes, fecha, contexto y revisión humana.</p>
+    </section>
+
+    <p class="atlas__caption">HIDROSAT ATLAS · Experiencia 3D conceptual · No representa alertas, una cartografía operacional ni el estado de infraestructura.</p>
   </main>
 
   <script>
+    type RegionId = "federal" | "litoral" | "cuyo" | "patagonia";
+    type ThreeModule = typeof import("three");
+
     const atlas = document.querySelector<HTMLElement>("[data-atlas]");
-    const mapTarget = document.querySelector<HTMLElement>("#atlas-map");
+    const canvas = document.querySelector<HTMLCanvasElement>("[data-atlas-scene]");
     const readout = document.querySelector<HTMLElement>("[data-atlas-readout] p");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const regions: Record<RegionId, {
+      index: string;
+      title: string;
+      copy: string;
+      rule: string;
+      point: [number, number];
+      rotation: number;
+      camera: [number, number, number];
+    }> = {
+      federal: {
+        index: "01",
+        title: "Una vista para empezar.",
+        copy: "Argentina es una red de cuencas, infraestructura y comunidades. Esta vista invita a empezar por el territorio antes de sacar conclusiones.",
+        rule: "El relieve y los flujos son una representación conceptual: no muestran mediciones ni alertas en vivo.",
+        point: [0, -0.2],
+        rotation: -0.16,
+        camera: [0, 8.8, 12.8],
+      },
+      litoral: {
+        index: "02",
+        title: "El agua también conecta.",
+        copy: "En el Litoral, ríos, humedales y ciudades muestran por qué una mirada de cuenca necesita unir territorio, tiempo y personas.",
+        rule: "Una vista 3D no confirma cambios ni reemplaza el conocimiento local, las mediciones o la verificación de campo.",
+        point: [0.52, 3.25],
+        rotation: -0.42,
+        camera: [1.1, 7.3, 10.5],
+      },
+      cuyo: {
+        index: "03",
+        title: "Cada gota tiene recorrido.",
+        copy: "En Cuyo, el agua superficial, las reservas y la infraestructura abierta hacen visible el valor de comprender recorridos antes de priorizar una acción.",
+        rule: "HIDROSAT puede organizar preguntas y evidencia; una persona debe interpretar el contexto y decidir qué verificar.",
+        point: [-0.82, 1.75],
+        rotation: 0.26,
+        camera: [-1.45, 7.1, 10.1],
+      },
+      patagonia: {
+        index: "04",
+        title: "Mirar a escala también importa.",
+        copy: "La Patagonia recuerda que los cambios hídricos se leen en paisajes extensos, con tiempos distintos y mucha incertidumbre por delante.",
+        rule: "Esta experiencia no muestra una alerta, una escena satelital ni una evaluación del estado de un activo real.",
+        point: [-0.05, -4.35],
+        rotation: 0.12,
+        camera: [0.25, 7.4, 10.9],
+      },
+    };
 
     const updateReadout = (message: string) => {
       if (readout) readout.textContent = message;
     };
 
-    let map: import("maplibre-gl").Map | undefined;
-    const layerIds = {
-      rivers: "atlas-rivers",
-      "water-bodies": "atlas-water-bodies",
-      "water-works": "atlas-water-works",
-    } as const;
-
-    const mountMap = (maplibregl: typeof import("maplibre-gl")) => {
-      if (!atlas || !mapTarget) return;
-      map = new maplibregl.Map({
-        container: mapTarget,
-        center: [-64.7, -38.5],
-        zoom: 3.12,
-        minZoom: 2.25,
-        maxZoom: 9,
-        maxBounds: [[-76.4, -57.8], [-50.4, -20.1]],
-        pitch: 17,
-        bearing: -4,
-        dragRotate: false,
-        touchPitch: false,
-        attributionControl: false,
-        style: {
-          version: 8,
-          sources: {
-            "argenmap-dark": {
-              type: "raster",
-              tiles: ["https://wms.ign.gob.ar/geoserver/gwc/service/tms/1.0.0/argenmap_oscuro@EPSG%3A3857@png/{z}/{x}/{y}.png"],
-              tileSize: 256,
-              scheme: "tms",
-              attribution: "© Instituto Geográfico Nacional",
-            },
-            "ign-rivers": {
-              type: "raster",
-              tiles: ["https://ide.ign.gob.ar/geoservicios/rest/services/ANIDA/Hidrografia/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256%2C256&f=image&format=png32&transparent=true&layers=show%3A0%2C1"],
-              tileSize: 256,
-              attribution: "Hidrografía: IGN",
-            },
-            "ign-water-bodies": {
-              type: "raster",
-              tiles: ["https://ide.ign.gob.ar/geoservicios/rest/services/ANIDA/Hidrografia/MapServer/export?bbox={bbox-epsg-3857}&bboxSR=3857&imageSR=3857&size=256%2C256&f=image&format=png32&transparent=true&layers=show%3A2%2C3"],
-              tileSize: 256,
-              attribution: "Hidrografía: IGN",
-            },
-            "ign-water-works": {
-              type: "raster",
-              tiles: ["https://wms.ign.gob.ar/geoserver/industria-servicios/wms?service=WMS&version=1.3.0&request=GetMap&layers=planta_potabilizadora_de_agua&styles=&format=image%2Fpng&transparent=true&width=256&height=256&crs=EPSG%3A3857&bbox={bbox-epsg-3857}"],
-              tileSize: 256,
-              attribution: "Plantas: fuente publicada por IGN",
-            },
-          },
-          layers: [
-            { id: "atlas-base", type: "raster", source: "argenmap-dark", paint: { "raster-saturation": -0.92, "raster-contrast": 0.45, "raster-brightness-max": 0.34 } },
-            { id: layerIds.rivers, type: "raster", source: "ign-rivers", paint: { "raster-opacity": 0.76, "raster-saturation": 0.35 } },
-            { id: layerIds["water-bodies"], type: "raster", source: "ign-water-bodies", paint: { "raster-opacity": 0.66, "raster-saturation": 0.25 } },
-            { id: layerIds["water-works"], type: "raster", source: "ign-water-works", paint: { "raster-opacity": 0.9 } },
-          ],
-        },
+    const updateRegion = (regionId: RegionId, sceneState?: SceneState) => {
+      const region = regions[regionId];
+      atlas?.setAttribute("data-region", regionId);
+      document.querySelectorAll<HTMLButtonElement>("[data-region-button]").forEach((button) => {
+        const active = button.dataset.regionButton === regionId;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", String(active));
       });
-
-      map.on("load", () => {
-        atlas.dataset.mapReady = "";
-        updateReadout("Capas públicas consultadas desde IGN · el detalle operativo permanece restringido.");
-      });
-      map.on("error", () => {
-        atlas.dataset.mapIssue = "";
-        updateReadout("La vista base sigue disponible. Algunas capas externas pueden tardar en responder.");
-      });
+      document.querySelector<HTMLElement>("[data-mission-counter]")!.textContent = `${region.index} / 04`;
+      document.querySelector<HTMLElement>("[data-brief-number]")!.textContent = region.index;
+      document.querySelector<HTMLElement>("[data-brief-title]")!.textContent = region.title;
+      document.querySelector<HTMLElement>("[data-brief-copy]")!.textContent = region.copy;
+      document.querySelector<HTMLElement>("[data-brief-rule]")!.textContent = region.rule;
+      updateReadout(`Recorrido ${region.index}: ${region.title}`);
+      sceneState?.focus(regionId);
     };
 
-    document.querySelectorAll<HTMLButtonElement>("[data-layer]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const key = button.dataset.layer as keyof typeof layerIds;
-        if (!key || !map?.getLayer(layerIds[key])) return;
-        const active = button.getAttribute("aria-pressed") === "true";
-        map.setLayoutProperty(layerIds[key], "visibility", active ? "none" : "visible");
-        button.setAttribute("aria-pressed", String(!active));
-        button.classList.toggle("is-active", !active);
-        updateReadout(`${button.querySelector("strong")?.textContent ?? "Capa"}: ${active ? "oculta" : "visible"}.`);
-      });
-    });
+    type SceneState = { focus: (regionId: RegionId) => void; rotate: () => void };
 
-    const views = {
-      national: { center: [-64.7, -38.5] as [number, number], zoom: 3.12, pitch: 17, bearing: -4 },
-      plata: { center: [-58.6, -31.7] as [number, number], zoom: 4.6, pitch: 22, bearing: -9 },
-      cuyo: { center: [-68.9, -33.2] as [number, number], zoom: 4.85, pitch: 21, bearing: 5 },
-      patagonia: { center: [-69.2, -44.1] as [number, number], zoom: 4.12, pitch: 20, bearing: -8 },
-    };
+    const mountScene = async () => {
+      if (!canvas || !atlas) return;
 
-    document.querySelectorAll<HTMLButtonElement>("[data-focus]").forEach((button) => {
-      button.addEventListener("click", () => {
-        const key = button.dataset.focus as keyof typeof views;
-        if (!key || !map) return;
-        map.flyTo({ ...views[key], duration: reducedMotion.matches ? 0 : 1050, essential: true });
-        document.querySelectorAll<HTMLButtonElement>("[data-focus]").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-        updateReadout(`Vista enfocada: ${button.textContent?.trim()}.`);
-      });
-    });
+      const THREE: ThreeModule = await import("three");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "high-performance" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65));
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-    const accessToggle = document.querySelector<HTMLButtonElement>("[data-access-toggle]");
-    const accessPanel = document.querySelector<HTMLElement>("[data-access-panel]");
-    accessToggle?.addEventListener("click", () => {
-      const expanded = accessToggle.getAttribute("aria-expanded") === "true";
-      accessToggle.setAttribute("aria-expanded", String(!expanded));
-      if (accessPanel) accessPanel.hidden = expanded;
-    });
-
-    const timeLabels = ["Línea base", "Nueva observación", "Comparación de cambio", "Caso para revisión"];
-    const timeControl = document.querySelector<HTMLInputElement>("#atlas-time");
-    const timeLabel = document.querySelector<HTMLElement>("[data-time-label]");
-    timeControl?.addEventListener("input", () => {
-      const index = Number(timeControl.value);
-      if (timeLabel) timeLabel.textContent = timeLabels[index] ?? timeLabels[0];
-      atlas?.style.setProperty("--atlas-phase", String(index));
-      updateReadout(`Secuencia conceptual: ${timeLabels[index] ?? timeLabels[0]}.`);
-    });
-
-    const mountField = (THREE: typeof import("three")) => {
-      const field = document.querySelector<HTMLCanvasElement>("#atlas-field");
-      if (!field) return;
-      const renderer = new THREE.WebGLRenderer({ canvas: field, alpha: true, antialias: false, powerPreference: "low-power" });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-      renderer.setClearColor(0x000000, 0);
       const scene = new THREE.Scene();
-      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-      camera.position.z = 2;
+      const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+      const cameraPosition = new THREE.Vector3(0, 8.8, 12.8);
+      const cameraGoal = cameraPosition.clone();
+      const lookTarget = new THREE.Vector3(0, 0.08, 0);
+      const lookGoal = lookTarget.clone();
+      camera.position.copy(cameraPosition);
 
-      const fieldGroup = new THREE.Group();
-      scene.add(fieldGroup);
+      scene.add(new THREE.HemisphereLight(0xa7e9f6, 0x03121c, 2.1));
+      const keyLight = new THREE.DirectionalLight(0x9eefff, 2.7);
+      keyLight.position.set(-4, 9, 6);
+      scene.add(keyLight);
+      const amberLight = new THREE.PointLight(0xb58962, 7, 22, 2);
+      amberLight.position.set(4, 3.4, -3);
+      scene.add(amberLight);
 
-      const sweepMaterial = new THREE.MeshBasicMaterial({ color: 0x00b9e8, transparent: true, opacity: 0.08, depthWrite: false, blending: THREE.AdditiveBlending });
-      const sweep = new THREE.Mesh(new THREE.PlaneGeometry(0.28, 2.8), sweepMaterial);
-      sweep.rotation.z = -0.22;
-      fieldGroup.add(sweep);
+      const stage = new THREE.Group();
+      stage.position.set(0, -0.34, 0);
+      scene.add(stage);
 
-      const brightLine = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, -1.4, 0.1), new THREE.Vector3(0, 1.4, 0.1)]),
-        new THREE.LineBasicMaterial({ color: 0xa9e1eb, transparent: true, opacity: 0.45 }),
+      const ground = new THREE.Mesh(
+        new THREE.CircleGeometry(13, 96),
+        new THREE.MeshBasicMaterial({ color: 0x03131c, transparent: true, opacity: 0.76 }),
       );
-      brightLine.rotation.z = -0.22;
-      fieldGroup.add(brightLine);
+      ground.rotation.x = -Math.PI / 2;
+      ground.position.y = -0.18;
+      stage.add(ground);
 
-      const resizeField = () => {
-        const rect = field.getBoundingClientRect();
+      const grid = new THREE.GridHelper(23, 24, 0x0c5267, 0x073247);
+      grid.material.transparent = true;
+      grid.material.opacity = 0.22;
+      grid.position.y = -0.16;
+      stage.add(grid);
+
+      const terrainPivot = new THREE.Group();
+      terrainPivot.rotation.y = regions.federal.rotation;
+      stage.add(terrainPivot);
+
+      const terrain = new THREE.Group();
+      terrain.rotation.x = -Math.PI / 2;
+      terrainPivot.add(terrain);
+
+      const outline: Array<[number, number]> = [
+        [-0.62, 7.45], [-0.16, 7.05], [0.1, 6.2], [-0.32, 5.45], [0.06, 4.65], [-0.44, 3.78], [-0.12, 3.02], [-0.7, 2.15], [-0.34, 1.38], [-0.89, 0.46], [-0.53, -0.3], [-1.08, -1.36], [-0.67, -2.25], [-1.03, -3.18], [-0.55, -4.14], [-0.94, -5.2], [-0.43, -6.16], [-0.8, -7.25], [-0.12, -8.02], [0.34, -7.12], [0.72, -5.95], [0.34, -4.76], [0.95, -3.45], [0.55, -2.11], [1.05, -0.9], [0.58, 0.24], [1.04, 1.47], [0.53, 2.62], [0.77, 3.82], [0.3, 5.03], [0.48, 6.28], [0.08, 7.42],
+      ];
+      const shape = new THREE.Shape();
+      outline.forEach(([x, y], index) => index === 0 ? shape.moveTo(x, y) : shape.lineTo(x, y));
+      shape.closePath();
+
+      const terrainGeometry = new THREE.ExtrudeGeometry(shape, { depth: 0.42, bevelEnabled: true, bevelSegments: 2, bevelSize: 0.045, bevelThickness: 0.06, curveSegments: 3 });
+      const terrainSurface = new THREE.Mesh(
+        terrainGeometry,
+        new THREE.MeshStandardMaterial({ color: 0x0b4051, emissive: 0x06232d, emissiveIntensity: 0.92, roughness: 0.61, metalness: 0.36 }),
+      );
+      terrain.add(terrainSurface);
+
+      const terrainEdges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(terrainGeometry, 16),
+        new THREE.LineBasicMaterial({ color: 0x5be1f2, transparent: true, opacity: 0.72 }),
+      );
+      terrainEdges.position.z = 0.01;
+      terrain.add(terrainEdges);
+
+      const observationField = new THREE.Mesh(
+        new THREE.PlaneGeometry(3.7, 17.5),
+        new THREE.MeshBasicMaterial({ color: 0x00b9e8, transparent: true, opacity: 0.075, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }),
+      );
+      observationField.position.set(0.04, -0.2, 0.5);
+      observationField.rotation.z = -0.17;
+      terrain.add(observationField);
+
+      const fieldLine = new THREE.Mesh(
+        new THREE.PlaneGeometry(0.06, 17.7),
+        new THREE.MeshBasicMaterial({ color: 0xa9e1eb, transparent: true, opacity: 0.56, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      fieldLine.position.set(0.04, -0.2, 0.515);
+      fieldLine.rotation.z = -0.17;
+      terrain.add(fieldLine);
+
+      const waterRoutes: Array<Array<[number, number]>> = [
+        [[-0.34, 6.55], [-0.14, 5.48], [0.2, 4.36], [0.45, 3.1], [0.62, 1.85], [0.48, 0.68], [0.68, -0.52]],
+        [[-0.6, 3.3], [-0.28, 2.72], [0.1, 2.1], [0.48, 1.42], [0.65, 0.68]],
+        [[-0.52, 2.08], [-0.36, 1.32], [-0.16, 0.45], [0.18, -0.52], [0.4, -1.65]],
+        [[-0.24, -1.5], [-0.08, -2.48], [-0.25, -3.56], [0.1, -4.7], [0.02, -6.03]],
+        [[-0.7, 4.18], [-0.5, 3.62], [-0.46, 2.9], [-0.28, 2.35]],
+      ];
+      const particleCurves: import("three").CatmullRomCurve3[] = [];
+      waterRoutes.forEach((route, index) => {
+        const points = route.map(([x, y]) => new THREE.Vector3(x, y, 0.52));
+        const curve = new THREE.CatmullRomCurve3(points, false, "centripetal");
+        particleCurves.push(curve);
+        const tube = new THREE.Mesh(
+          new THREE.TubeGeometry(curve, 96, index === 0 ? 0.075 : 0.045, 8, false),
+          new THREE.MeshBasicMaterial({ color: index === 0 ? 0x1cd6f4 : 0x00a9d5, transparent: true, opacity: index === 0 ? 0.92 : 0.65, blending: THREE.AdditiveBlending, depthWrite: false }),
+        );
+        terrain.add(tube);
+      });
+
+      const regionPoints: Record<RegionId, [number, number]> = {
+        federal: [0.03, -0.1],
+        litoral: [0.52, 3.25],
+        cuyo: [-0.82, 1.75],
+        patagonia: [-0.05, -4.35],
+      };
+      const regionMarkers = new Map<RegionId, import("three").Group>();
+      (Object.entries(regionPoints) as Array<[RegionId, [number, number]]>).forEach(([id, [x, y]]) => {
+        const marker = new THREE.Group();
+        marker.position.set(x, y, 0.58);
+        const ring = new THREE.Mesh(
+          new THREE.RingGeometry(0.14, 0.21, 40),
+          new THREE.MeshBasicMaterial({ color: id === "federal" ? 0x00b9e8 : 0xa9e1eb, transparent: true, opacity: 0.9, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+        );
+        marker.add(ring);
+        const core = new THREE.Mesh(
+          new THREE.CircleGeometry(0.055, 28),
+          new THREE.MeshBasicMaterial({ color: 0xf5f8f6, transparent: true, opacity: 0.96, side: THREE.DoubleSide }),
+        );
+        core.position.z = 0.006;
+        marker.add(core);
+        terrain.add(marker);
+        regionMarkers.set(id, marker);
+      });
+
+      const particleCount = 78;
+      const particlePositions = new Float32Array(particleCount * 3);
+      const particleOffsets = Array.from({ length: particleCount }, (_, index) => ({ curve: index % particleCurves.length, offset: (index * 0.173) % 1, speed: 0.03 + (index % 5) * 0.006 }));
+      const particleGeometry = new THREE.BufferGeometry();
+      particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+      const particleField = new THREE.Points(
+        particleGeometry,
+        new THREE.PointsMaterial({ color: 0xd9fbff, size: 0.047, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true }),
+      );
+      terrain.add(particleField);
+
+      const focusRing = new THREE.Mesh(
+        new THREE.RingGeometry(0.26, 0.33, 48),
+        new THREE.MeshBasicMaterial({ color: 0x00d9ff, transparent: true, opacity: 0.92, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      focusRing.position.z = 0.6;
+      terrain.add(focusRing);
+
+      const observationNode = new THREE.Group();
+      const nodeRing = new THREE.Mesh(
+        new THREE.RingGeometry(0.42, 0.45, 56),
+        new THREE.MeshBasicMaterial({ color: 0xb58962, transparent: true, opacity: 0.7, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      const nodeCore = new THREE.Mesh(
+        new THREE.CircleGeometry(0.075, 32),
+        new THREE.MeshBasicMaterial({ color: 0xf0be72, transparent: true, opacity: 0.96, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      nodeCore.position.z = 0.01;
+      observationNode.add(nodeRing, nodeCore);
+      observationNode.position.set(-0.14, 0.28, 0.6);
+      terrain.add(observationNode);
+
+      const halo = new THREE.Mesh(
+        new THREE.RingGeometry(3.7, 3.75, 96),
+        new THREE.MeshBasicMaterial({ color: 0x146781, transparent: true, opacity: 0.38, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false }),
+      );
+      halo.rotation.x = -Math.PI / 2;
+      halo.position.y = -0.08;
+      stage.add(halo);
+
+      let targetRotation = regions.federal.rotation;
+      let dragged = false;
+      let dragOrigin = 0;
+      let rotationOrigin = targetRotation;
+      let visible = !document.hidden;
+      let frame = 0;
+
+      const localToWorld = ([x, y]: [number, number]) => new THREE.Vector3(x, 0.2, -y);
+      const setFocus = (regionId: RegionId) => {
+        const region = regions[regionId];
+        targetRotation = region.rotation;
+        const point = localToWorld(region.point);
+        lookGoal.set(point.x * 0.28, 0.1, point.z * 0.28);
+        cameraGoal.set(region.camera[0], region.camera[1], region.camera[2]);
+        focusRing.position.set(region.point[0], region.point[1], 0.61);
+        regionMarkers.forEach((marker, id) => marker.scale.setScalar(id === regionId ? 1.45 : 0.88));
+      };
+
+      const resize = () => {
+        const rect = atlas.getBoundingClientRect();
         renderer.setSize(rect.width, rect.height, false);
-        const aspect = Math.max(rect.width / Math.max(rect.height, 1), 0.25);
-        camera.left = -aspect;
-        camera.right = aspect;
-        camera.top = 1;
-        camera.bottom = -1;
+        camera.aspect = rect.width / rect.height;
         camera.updateProjectionMatrix();
       };
-      resizeField();
-      window.addEventListener("resize", resizeField, { passive: true });
 
-      let pointerX = 0;
-      let pointerY = 0;
-      const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-      const onPointerMove = (event: PointerEvent) => {
-        if (!finePointer.matches || reducedMotion.matches) return;
-        pointerX = (event.clientX / window.innerWidth - 0.5) * 2;
-        pointerY = (event.clientY / window.innerHeight - 0.5) * 2;
-      };
-      window.addEventListener("pointermove", onPointerMove, { passive: true });
+      const renderFrame = (time = 0) => {
+        const quiet = reducedMotion.matches;
+        camera.position.lerp(cameraGoal, quiet ? 1 : 0.052);
+        lookTarget.lerp(lookGoal, quiet ? 1 : 0.07);
+        terrainPivot.rotation.y += (targetRotation - terrainPivot.rotation.y) * (quiet ? 1 : 0.055);
 
-      let frame = 0;
-      const renderField = (timestamp: number) => {
-        const phase = Number(atlas?.style.getPropertyValue("--atlas-phase") || 0);
-        if (!document.hidden && !reducedMotion.matches) {
-          sweep.position.x = -1.75 + ((timestamp / 9000 + phase * 0.23) % 1) * 3.5;
-          fieldGroup.rotation.z += (pointerX * 0.0022 - fieldGroup.rotation.z) * 0.025;
-          fieldGroup.position.y += (pointerY * -0.006 - fieldGroup.position.y) * 0.025;
-        } else {
-          sweep.position.x = 0;
-          fieldGroup.rotation.z = 0;
-          fieldGroup.position.y = 0;
+        const elapsed = time * 0.001;
+        if (!quiet) {
+          terrainPivot.position.y = Math.sin(elapsed * 0.42) * 0.055;
+          observationField.material.opacity = 0.06 + Math.sin(elapsed * 0.37) * 0.017;
+          fieldLine.material.opacity = 0.44 + Math.sin(elapsed * 0.7) * 0.14;
+          halo.rotation.z += 0.0013;
+          observationNode.rotation.z -= 0.013;
+          observationNode.scale.setScalar(1 + Math.sin(elapsed * 1.4) * 0.07);
+          focusRing.scale.setScalar(1 + Math.sin(elapsed * 1.7) * 0.16);
+          particleOffsets.forEach((particle, index) => {
+            const point = particleCurves[particle.curve].getPointAt((particle.offset + elapsed * particle.speed) % 1);
+            particlePositions[index * 3] = point.x;
+            particlePositions[index * 3 + 1] = point.y;
+            particlePositions[index * 3 + 2] = point.z + Math.sin(elapsed * 2.2 + index) * 0.014;
+          });
+          particleGeometry.attributes.position.needsUpdate = true;
         }
+        camera.lookAt(lookTarget);
         renderer.render(scene, camera);
-        frame = window.requestAnimationFrame(renderField);
+        if (!quiet && visible) frame = window.requestAnimationFrame(renderFrame);
       };
-      frame = window.requestAnimationFrame(renderField);
 
-      window.addEventListener("pagehide", () => {
+      const resume = () => {
+        if (frame || reducedMotion.matches || !visible) return;
+        frame = window.requestAnimationFrame(renderFrame);
+      };
+      const pause = () => {
+        if (!frame) return;
         window.cancelAnimationFrame(frame);
-        window.removeEventListener("resize", resizeField);
-        window.removeEventListener("pointermove", onPointerMove);
-        renderer.dispose();
-      }, { once: true });
+        frame = 0;
+      };
+      const refreshMotion = () => {
+        pause();
+        renderFrame();
+        resume();
+      };
+
+      const onPointerDown = (event: PointerEvent) => {
+        dragged = true;
+        dragOrigin = event.clientX;
+        rotationOrigin = targetRotation;
+        canvas.setPointerCapture?.(event.pointerId);
+      };
+      const onPointerMove = (event: PointerEvent) => {
+        if (!dragged) return;
+        targetRotation = rotationOrigin + (event.clientX - dragOrigin) * 0.008;
+      };
+      const onPointerUp = (event: PointerEvent) => {
+        dragged = false;
+        canvas.releasePointerCapture?.(event.pointerId);
+      };
+
+      canvas.addEventListener("pointerdown", onPointerDown);
+      canvas.addEventListener("pointermove", onPointerMove);
+      canvas.addEventListener("pointerup", onPointerUp);
+      canvas.addEventListener("pointercancel", onPointerUp);
+      window.addEventListener("resize", resize);
+      document.addEventListener("visibilitychange", () => {
+        visible = !document.hidden;
+        if (visible) resume(); else pause();
+      });
+      reducedMotion.addEventListener("change", refreshMotion);
+
+      resize();
+      setFocus("federal");
+      particleOffsets.forEach((particle, index) => {
+        const point = particleCurves[particle.curve].getPointAt(particle.offset);
+        particlePositions[index * 3] = point.x;
+        particlePositions[index * 3 + 1] = point.y;
+        particlePositions[index * 3 + 2] = point.z;
+      });
+      particleGeometry.attributes.position.needsUpdate = true;
+      renderFrame();
+      resume();
+      atlas.dataset.sceneReady = "";
+      updateReadout("Territorio listo. Elegí una región para continuar.");
+
+      return {
+        focus: setFocus,
+        rotate: () => {
+          targetRotation += Math.PI * 0.52;
+          updateReadout("Orientación del territorio actualizada.");
+        },
+      } satisfies SceneState;
     };
 
-    const loadAtlas = async () => {
-      try {
-        const [maplibregl, THREE] = await Promise.all([import("maplibre-gl"), import("three")]);
-        mountMap(maplibregl);
-        mountField(THREE);
-      } catch {
-        updateReadout("No se pudo iniciar una capa visual. Volvé a intentar la vista del Atlas.");
-      }
+    let sceneState: SceneState | undefined;
+    const startAtlas = () => {
+      const load = () => {
+        void mountScene().then((state) => {
+          sceneState = state;
+        }).catch(() => {
+          atlas?.setAttribute("data-scene-issue", "");
+          updateReadout("No pudimos iniciar la vista 3D. La idea del Atlas sigue disponible en esta página.");
+        });
+      };
+      window.setTimeout(load, 0);
     };
 
-    const scheduleAtlas = window.requestIdleCallback;
-    if (typeof scheduleAtlas === "function") {
-      scheduleAtlas(() => void loadAtlas(), { timeout: 320 });
-    } else {
-      setTimeout(() => void loadAtlas(), 0);
-    }
+    document.querySelectorAll<HTMLButtonElement>("[data-region-button]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const regionId = button.dataset.regionButton as RegionId | undefined;
+        if (regionId) updateRegion(regionId, sceneState);
+      });
+    });
+    document.querySelector<HTMLButtonElement>("[data-start-tour]")?.addEventListener("click", () => {
+      document.querySelector<HTMLElement>(".atlas__missions")?.scrollIntoView({ behavior: reducedMotion.matches ? "auto" : "smooth", block: "nearest" });
+      updateReadout("Elegí una región. Cada recorrido explica una manera de pensar el agua.");
+    });
+    document.querySelector<HTMLButtonElement>("[data-orbit]")?.addEventListener("click", () => sceneState?.rotate());
+
+    const safetyToggle = document.querySelector<HTMLButtonElement>("[data-safety-toggle]");
+    const safetyPanel = document.querySelector<HTMLElement>("[data-safety-panel]");
+    safetyToggle?.addEventListener("click", () => {
+      const expanded = safetyToggle.getAttribute("aria-expanded") === "true";
+      safetyToggle.setAttribute("aria-expanded", String(!expanded));
+      safetyPanel?.toggleAttribute("hidden", expanded);
+    });
+
+    startAtlas();
   </script>
 </BaseLayout>
 
 <style>
-  :global(body) { background: #020812; overflow: hidden; }
-  :global(.skip-link) { z-index: 100; }
-  :global(.maplibregl-map) { height: 100%; overflow: hidden; position: relative; width: 100%; }
-  :global(.maplibregl-canvas-container), :global(.maplibregl-canvas) { inset: 0; position: absolute; }
-  :global(.maplibregl-canvas) { height: 100% !important; width: 100% !important; }
+  :global(body) { background: #020a10; }
+  :global(.skip-link) { z-index: 150; }
 
   .atlas {
-    --atlas-phase: 0;
-    background: #020812;
-    color: var(--hs-paper);
-    height: 100svh;
+    --atlas-paper: #effaf8;
+    --atlas-muted: #9fc2c8;
+    --atlas-panel: rgb(2 20 29 / 0.76);
+    --atlas-line: rgb(130 226 238 / 0.22);
+    --atlas-cyan: #00c8ea;
+    --atlas-amber: #e7ad5b;
+    background: radial-gradient(circle at 50% 42%, #083346 0%, #03131d 42%, #01070b 82%);
+    color: var(--atlas-paper);
     isolation: isolate;
-    min-height: 39rem;
+    min-height: max(44rem, 100svh);
     overflow: hidden;
     position: relative;
   }
-  .atlas::before { background: linear-gradient(90deg, rgb(0 185 232 / 0.12), transparent 21%, transparent 72%, rgb(0 185 232 / 0.06)); content: ""; inset: 0; pointer-events: none; position: absolute; z-index: 1; }
-  .atlas__map-wrap, .atlas__map, .atlas__field, .atlas__grain, .atlas__vignette { inset: 0; position: absolute; }
-  .atlas__map { background: radial-gradient(circle at 59% 42%, #0c2c3d, #041321 58%, #020812); }
-  .atlas__field { height: 100%; pointer-events: none; width: 100%; z-index: 2; }
-  .atlas__grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; opacity: 0.13; pointer-events: none; z-index: 3; }
-  .atlas__vignette { background: radial-gradient(ellipse at center, transparent 34%, rgb(1 6 13 / 0.16) 67%, rgb(1 6 13 / 0.76) 100%); pointer-events: none; z-index: 4; }
 
-  .atlas__topbar { align-items: center; border-bottom: 1px solid rgb(169 225 235 / 0.15); display: grid; gap: 1.2rem; grid-template-columns: minmax(9rem, 1fr) auto 1fr auto; left: 0; min-height: 5.5rem; padding: 0 1.6rem; position: absolute; right: 0; top: 0; z-index: 10; }
-  .atlas__topbar::after { background: linear-gradient(90deg, transparent, rgb(0 185 232 / 0.46), transparent); bottom: -1px; content: ""; height: 1px; left: 24%; opacity: 0.55; position: absolute; width: 19rem; }
-  .atlas__brand { color: var(--hs-paper); display: inline-flex; width: max-content; }
-  .atlas__brand :global(.brand) { font-size: 1.15rem; }
-  .atlas__identity { border-left: 1px solid rgb(169 225 235 / 0.22); display: grid; gap: 0.12rem; padding-left: 1.15rem; }
-  .atlas__identity span, .atlas__mode, .atlas__return, .atlas__eyebrow, .atlas__panel-title span, .atlas__missions > p, .atlas__review-head > div > p, .atlas__restricted, .atlas__review-rule span, .atlas__timeline-label p, .atlas__ticks, .atlas__timeline-help, .atlas__legend, .atlas__readout { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; }
-  .atlas__identity span { color: var(--hs-glacier); }
-  .atlas__identity small { color: rgb(220 233 232 / 0.56); font-family: var(--font-body); font-size: 0.63rem; }
-  .atlas__mode { align-items: center; color: var(--hs-glacier); display: flex; gap: 0.55rem; justify-self: end; }
-  .atlas__mode-dot { background: var(--hs-signal); border-radius: 50%; box-shadow: 0 0 0 0.38rem rgb(0 185 232 / 0.08); height: 0.38rem; width: 0.38rem; }
-  .atlas__return { color: var(--hs-paper); min-height: 2.75rem; padding-top: 1rem; text-decoration: none; }
-  .atlas__return:hover { color: var(--hs-signal); }
-  .atlas__return span { color: var(--hs-signal); font-size: 0.78rem; margin-left: 0.35rem; }
+  .atlas__scene, .atlas__wash, .atlas__grain { inset: 0; position: absolute; }
+  .atlas__scene { cursor: grab; height: 100%; touch-action: none; width: 100%; z-index: 0; }
+  .atlas__scene:active { cursor: grabbing; }
+  .atlas__wash { background: linear-gradient(90deg, rgb(0 8 12 / 0.84) 0%, rgb(0 8 12 / 0.38) 29%, transparent 56%, rgb(0 8 12 / 0.24) 100%); pointer-events: none; z-index: 1; }
+  .atlas__grain { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.83' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E"); mix-blend-mode: soft-light; opacity: 0.14; pointer-events: none; z-index: 3; }
 
-  .atlas__intro, .atlas__layers, .atlas__missions, .atlas__review, .atlas__timeline, .atlas__readout, .atlas__legend { position: absolute; z-index: 8; }
-  .atlas__intro { left: clamp(1.25rem, 4vw, 4.5rem); max-width: 30rem; top: clamp(7.5rem, 13vh, 9.5rem); }
-  .atlas__eyebrow { align-items: center; color: var(--hs-signal); display: flex; gap: 0.7rem; margin: 0; }
-  .atlas__eyebrow span { background: var(--hs-signal); height: 0.42rem; width: 0.42rem; }
-  .atlas__intro h1 { font-size: clamp(2.7rem, 5.3vw, 5.9rem); letter-spacing: -0.07em; line-height: 0.88; margin: 1.3rem 0 1.25rem; max-width: 10ch; }
-  .atlas__mobile-break { display: inline; }
-  .atlas__intro h1 em { color: var(--hs-signal); font-style: normal; }
-  .atlas__intro > p:not(.atlas__eyebrow) { color: var(--hs-mist); font-size: 0.93rem; line-height: 1.62; margin: 0; max-width: 28rem; }
-  .atlas__access { align-items: center; background: transparent; border: 0; border-bottom: 1px solid rgb(169 225 235 / 0.38); color: var(--hs-paper); cursor: pointer; display: inline-flex; font: 560 0.72rem/1.2 var(--font-body); gap: 1.1rem; margin-top: 1.4rem; min-height: 2.75rem; padding: 0; text-align: left; }
-  .atlas__access span { color: var(--hs-signal); font-family: var(--font-mono); font-size: 1rem; transition: transform 180ms ease; }
-  .atlas__access[aria-expanded="true"] span { transform: rotate(45deg); }
-  .atlas__access-panel { background: rgb(3 20 34 / 0.94); border-left: 2px solid var(--hs-signal); box-shadow: 0 1.2rem 2.5rem rgb(0 0 0 / 0.18); margin-top: 0.7rem; padding: 1rem 1.1rem; }
-  .atlas__access-panel p { color: var(--hs-glacier); font-size: 0.72rem; line-height: 1.5; margin: 0; }
-  .atlas__access-panel p + p { border-top: 1px solid rgb(169 225 235 / 0.16); margin-top: 0.65rem; padding-top: 0.65rem; }
-  .atlas__access-panel strong { color: var(--hs-paper); }
+  .atlas__topbar, .atlas__intro, .atlas__missions, .atlas__briefing, .atlas__how, .atlas__readout, .atlas__legend, .atlas__safety, .atlas__caption { position: absolute; z-index: 4; }
+  .atlas__topbar {
+    align-items: center;
+    border-bottom: 1px solid rgb(176 234 241 / 0.14);
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr auto 1fr;
+    left: clamp(1.25rem, 3.2vw, 4rem);
+    padding: 1.35rem 0 1.15rem;
+    right: clamp(1.25rem, 3.2vw, 4rem);
+    top: 0;
+  }
+  .atlas__topbar :global(.brand) { color: var(--atlas-paper); }
+  .atlas__topbar :global(.brand__orbit), .atlas__topbar :global(.brand__node) { stroke: var(--atlas-cyan); }
+  .atlas__identity { display: grid; justify-items: center; line-height: 1.2; text-align: center; }
+  .atlas__identity span, .atlas__eyebrow, .atlas__panel-heading p, .atlas__briefing-status, .atlas__how-kicker { color: var(--atlas-cyan); font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+  .atlas__identity small { color: var(--atlas-muted); font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.04em; margin-top: 0.24rem; }
+  .atlas__top-actions { align-items: center; display: flex; gap: 1.25rem; justify-content: end; }
+  .atlas__orbit-button, .atlas__return { align-items: center; color: var(--atlas-paper); display: inline-flex; font-family: var(--font-mono); font-size: 0.62rem; font-weight: 700; gap: 0.54rem; letter-spacing: 0.08em; min-height: 2.75rem; text-decoration: none; text-transform: uppercase; }
+  .atlas__orbit-button { background: transparent; border: 0; cursor: pointer; padding: 0; }
+  .atlas__orbit-button i { border: 1px solid var(--atlas-cyan); border-radius: 50%; height: 0.78rem; position: relative; width: 0.78rem; }
+  .atlas__orbit-button i::after { background: var(--atlas-cyan); border-radius: 50%; content: ""; height: 0.16rem; position: absolute; right: -0.07rem; top: 0.04rem; width: 0.16rem; }
+  .atlas__return { border-bottom: 1px solid rgb(238 250 248 / 0.45); }
+  .atlas__return span { color: var(--atlas-cyan); }
+  .atlas__orbit-button:hover, .atlas__return:hover { color: var(--atlas-cyan); }
 
-  .atlas__layers { background: linear-gradient(135deg, rgb(3 21 35 / 0.96), rgb(3 14 26 / 0.88)); border: 1px solid rgb(169 225 235 / 0.19); bottom: 1.45rem; left: clamp(1.25rem, 4vw, 4.5rem); width: min(23rem, calc(100vw - 2.5rem)); }
-  .atlas__panel-title { align-items: end; border-bottom: 1px solid rgb(169 225 235 / 0.14); display: flex; justify-content: space-between; padding: 1rem 1.1rem 0.85rem; }
-  .atlas__panel-title span { color: var(--hs-glacier); }
-  .atlas__panel-title small { color: rgb(220 233 232 / 0.46); font-size: 0.6rem; }
-  .atlas__layer-list { display: grid; }
-  .atlas-layer { align-items: center; background: transparent; border: 0; border-bottom: 1px solid rgb(169 225 235 / 0.12); color: var(--hs-mist); cursor: pointer; display: grid; gap: 0.85rem; grid-template-columns: 1.3rem 1fr auto; min-height: 4rem; padding: 0.6rem 1.1rem; text-align: left; transition: background 180ms ease, color 180ms ease; }
-  .atlas-layer:last-child { border-bottom: 0; }
-  .atlas-layer:hover { background: rgb(0 185 232 / 0.07); }
-  .atlas-layer[aria-pressed="false"] { color: rgb(220 233 232 / 0.46); }
-  .atlas-layer__mark { display: inline-block; position: relative; }
-  .atlas-layer__mark--river { border-bottom: 2px solid var(--hs-signal); height: 0.8rem; transform: rotate(-22deg); width: 1.2rem; }
-  .atlas-layer__mark--river::after { border-bottom: 1px solid var(--hs-glacier); content: ""; height: 0.45rem; left: 0.3rem; position: absolute; top: 0.12rem; transform: rotate(39deg); width: 0.62rem; }
-  .atlas-layer__mark--body { background: var(--hs-current); border-radius: 48% 52% 43% 57%; height: 0.9rem; width: 1.2rem; }
-  .atlas-layer__mark--works { border: 1px solid var(--hs-signal); height: 0.85rem; width: 0.85rem; }
-  .atlas-layer__mark--works::after { background: var(--hs-signal); content: ""; height: 0.18rem; position: absolute; right: -0.38rem; top: 0.32rem; width: 0.35rem; }
-  .atlas-layer span { display: grid; gap: 0.1rem; }
-  .atlas-layer strong { font-size: 0.75rem; font-weight: 560; }
-  .atlas-layer small { color: rgb(220 233 232 / 0.56); font-size: 0.62rem; }
-  .atlas-layer b { color: rgb(169 225 235 / 0.36); font: 400 0.55rem var(--font-mono); }
-  .atlas__source-note { align-items: flex-start; border-top: 1px solid rgb(169 225 235 / 0.1); color: rgb(220 233 232 / 0.54); display: flex; font-size: 0.6rem; gap: 0.5rem; line-height: 1.45; margin: 0; padding: 0.72rem 1.1rem 0.85rem; }
-  .atlas__source-note span { border: 1px solid currentColor; border-radius: 50%; display: grid; flex: 0 0 auto; font: 500 0.48rem/1 var(--font-mono); height: 0.8rem; place-items: center; width: 0.8rem; }
+  .atlas__intro { left: clamp(1.25rem, 5.8vw, 7.2rem); max-width: 30rem; top: clamp(7.7rem, 17vh, 12.3rem); }
+  .atlas__eyebrow { align-items: center; display: flex; gap: 0.6rem; margin: 0 0 1.1rem; }
+  .atlas__eyebrow span { background: var(--atlas-cyan); box-shadow: 0 0 1rem var(--atlas-cyan); height: 0.36rem; width: 0.36rem; }
+  .atlas__intro h1 { font-size: clamp(2.8rem, 5.2vw, 5.2rem); font-weight: 580; letter-spacing: -0.072em; line-height: 0.93; margin: 0; max-width: 8.8ch; }
+  .atlas__intro h1 em { color: var(--atlas-cyan); font-style: normal; }
+  .atlas__intro > p:not(.atlas__eyebrow) { color: #d0e1e1; font-size: clamp(0.98rem, 1.25vw, 1.12rem); line-height: 1.6; margin: 1.5rem 0 0; max-width: 40ch; }
+  .atlas__intro-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1rem 1.2rem; margin-top: 1.6rem; }
+  .atlas__play-button { align-items: center; background: var(--atlas-cyan); border: 1px solid var(--atlas-cyan); color: #01212e; cursor: pointer; display: inline-flex; font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; gap: 1rem; letter-spacing: 0.08em; min-height: 3.05rem; padding: 0 1rem 0 1.15rem; text-transform: uppercase; transition: transform 180ms ease, background 180ms ease; }
+  .atlas__play-button:hover { background: #d9fbff; transform: translateY(-2px); }
+  .atlas__intro-actions > span { color: var(--atlas-muted); font-size: 0.74rem; line-height: 1.35; max-width: 15rem; }
 
-  .atlas__missions { left: 50%; top: 6.7rem; transform: translateX(-50%); }
-  .atlas__missions > p { color: rgb(220 233 232 / 0.56); margin: 0 0 0.55rem; text-align: center; }
-  .atlas__missions > div { background: rgb(3 18 31 / 0.75); border: 1px solid rgb(169 225 235 / 0.18); display: flex; padding: 0.22rem; }
-  .atlas__missions button { background: transparent; border: 0; color: rgb(220 233 232 / 0.62); cursor: pointer; font: 500 0.64rem var(--font-body); min-height: 2rem; padding: 0 0.68rem; transition: background 180ms ease, color 180ms ease; }
-  .atlas__missions button[aria-pressed="true"] { background: rgb(0 185 232 / 0.16); color: var(--hs-paper); }
+  .atlas__missions { background: var(--atlas-panel); border: 1px solid var(--atlas-line); bottom: clamp(3.5rem, 6.5vh, 5.2rem); left: clamp(1.25rem, 5.8vw, 7.2rem); max-width: 25rem; min-width: 20rem; backdrop-filter: blur(18px); }
+  .atlas__panel-heading { align-items: center; border-bottom: 1px solid var(--atlas-line); display: flex; justify-content: space-between; padding: 0.9rem 1rem; }
+  .atlas__panel-heading p { margin: 0; }
+  .atlas__panel-heading small { color: var(--atlas-muted); display: block; font-size: 0.68rem; margin-top: 0.28rem; }
+  .atlas__panel-heading > span { color: var(--atlas-muted); font-family: var(--font-mono); font-size: 0.66rem; }
+  .atlas__mission-list { display: grid; grid-template-columns: 1fr 1fr; }
+  .atlas__mission { align-items: center; background: transparent; border: 0; border-bottom: 1px solid var(--atlas-line); color: var(--atlas-paper); cursor: pointer; display: grid; font-family: var(--font-body); gap: 0.45rem; grid-template-columns: auto 1fr auto; min-height: 3.5rem; padding: 0.65rem 0.8rem; text-align: left; transition: background 170ms ease, color 170ms ease; }
+  .atlas__mission:nth-child(odd) { border-right: 1px solid var(--atlas-line); }
+  .atlas__mission:nth-child(n + 3) { border-bottom: 0; }
+  .atlas__mission span { color: var(--atlas-muted); font-family: var(--font-mono); font-size: 0.58rem; }
+  .atlas__mission strong { font-size: 0.83rem; font-weight: 590; }
+  .atlas__mission i { color: var(--atlas-cyan); font-style: normal; opacity: 0; transform: translate(-4px, 4px); transition: opacity 170ms ease, transform 170ms ease; }
+  .atlas__mission:hover, .atlas__mission.is-active { background: rgb(0 185 232 / 0.12); color: #f6ffff; }
+  .atlas__mission.is-active i, .atlas__mission:hover i { opacity: 1; transform: translate(0); }
 
-  .atlas__review { background: linear-gradient(145deg, rgb(4 24 40 / 0.95), rgb(2 12 23 / 0.91)); border: 1px solid rgb(169 225 235 / 0.19); right: clamp(1.25rem, 4vw, 4.5rem); top: clamp(8.2rem, 16vh, 10.3rem); width: min(20.5rem, calc(100vw - 2.5rem)); }
-  .atlas__review-head { align-items: start; border-bottom: 1px solid rgb(169 225 235 / 0.14); display: flex; justify-content: space-between; padding: 1.1rem 1.1rem 0.9rem; }
-  .atlas__review-head > div > p { color: rgb(169 225 235 / 0.6); margin: 0 0 0.38rem; }
-  .atlas__review h2 { font-size: 1.25rem; letter-spacing: -0.035em; line-height: 1; margin: 0; }
-  .atlas__restricted { border: 1px solid rgb(199 120 34 / 0.55); color: #e7a44e; font-size: 0.48rem; padding: 0.32rem 0.38rem; }
-  .atlas__locked-state { display: grid; gap: 1rem; grid-template-columns: 2.6rem 1fr; padding: 1.2rem 1.1rem; }
-  .atlas__locked-icon { border: 1px solid rgb(169 225 235 / 0.4); height: 2.35rem; position: relative; width: 2.35rem; }
-  .atlas__locked-icon i { background: var(--hs-signal); height: 0.22rem; position: absolute; width: 0.22rem; }
-  .atlas__locked-icon i:nth-child(1) { left: 0.46rem; top: 0.46rem; }
-  .atlas__locked-icon i:nth-child(2) { right: 0.46rem; top: 0.46rem; }
-  .atlas__locked-icon i:nth-child(3) { bottom: 0.46rem; left: 50%; transform: translateX(-50%); }
-  .atlas__locked-state p { color: rgb(220 233 232 / 0.68); font-size: 0.71rem; line-height: 1.53; margin: 0; }
-  .atlas__locked-state strong { color: var(--hs-paper); }
-  .atlas__review-rule { background: rgb(199 120 34 / 0.09); border-top: 1px solid rgb(199 120 34 / 0.25); padding: 0.85rem 1.1rem 0.95rem; }
-  .atlas__review-rule span { color: #e7a44e; font-size: 0.5rem; }
-  .atlas__review-rule p { color: var(--hs-mist); font-size: 0.67rem; line-height: 1.45; margin: 0.45rem 0 0; }
+  .atlas__briefing { background: linear-gradient(180deg, rgb(4 30 42 / 0.88), rgb(3 17 25 / 0.75)); border: 1px solid var(--atlas-line); max-width: 17.4rem; padding: 1rem; right: clamp(1.25rem, 4.1vw, 4.5rem); top: clamp(7.7rem, 18vh, 11.5rem); backdrop-filter: blur(16px); }
+  .atlas__briefing-status { align-items: center; display: flex; gap: 0.5rem; }
+  .atlas__briefing-status span { background: var(--atlas-amber); border-radius: 50%; box-shadow: 0 0 0.8rem rgb(231 173 91 / 0.85); height: 0.34rem; width: 0.34rem; }
+  .atlas__briefing-number { color: rgb(169 225 235 / 0.25); font-family: var(--font-display); font-size: 3.8rem; font-weight: 650; letter-spacing: -0.1em; line-height: 0.9; margin: 1.3rem 0 0.55rem; }
+  .atlas__briefing h2 { font-size: 1.22rem; letter-spacing: -0.045em; line-height: 1.05; margin: 0; max-width: 14ch; }
+  .atlas__briefing > p:not(.atlas__briefing-number) { color: #c6d7d8; font-size: 0.8rem; line-height: 1.56; margin: 0.8rem 0 1rem; }
+  .atlas__briefing-rule { border-top: 1px solid var(--atlas-line); display: grid; gap: 0.7rem; grid-template-columns: auto 1fr; padding-top: 0.85rem; }
+  .atlas__briefing-rule i { border: 1px solid var(--atlas-amber); height: 0.66rem; margin-top: 0.2rem; position: relative; width: 0.66rem; }
+  .atlas__briefing-rule i::after { background: var(--atlas-amber); content: ""; height: 0.15rem; left: 0.18rem; position: absolute; top: 0.23rem; width: 0.28rem; }
+  .atlas__briefing-rule p { color: var(--atlas-muted); font-size: 0.66rem; line-height: 1.5; margin: 0; }
 
-  .atlas__timeline { align-items: center; background: rgb(2 12 22 / 0.84); border: 1px solid rgb(169 225 235 / 0.18); bottom: 1.45rem; display: grid; gap: 1rem; grid-template-columns: 9.2rem minmax(14rem, 26rem) minmax(11rem, 16rem); left: 50%; padding: 0.78rem 1rem 0.64rem; transform: translateX(-50%); width: min(52rem, calc(100vw - 31rem)); }
-  .atlas__timeline-label p { color: rgb(169 225 235 / 0.6); font-size: 0.5rem; margin: 0 0 0.32rem; }
-  .atlas__timeline-label strong { color: var(--hs-paper); font-size: 0.78rem; font-weight: 520; }
-  .atlas__timeline-control { padding-top: 0.4rem; }
-  .atlas__timeline input { accent-color: var(--hs-signal); cursor: pointer; display: block; margin: 0; width: 100%; }
-  .atlas__ticks { color: rgb(169 225 235 / 0.58); display: flex; font-size: 0.46rem; justify-content: space-between; margin-top: 0.32rem; }
-  .atlas__timeline-help { color: rgb(220 233 232 / 0.48); font-size: 0.48rem; letter-spacing: 0.06em; line-height: 1.48; margin: 0; text-transform: none; }
+  .atlas__how { bottom: clamp(4.4rem, 8vh, 6.5rem); left: 50%; max-width: 21rem; transform: translateX(-50%); }
+  .atlas__how-kicker { color: var(--atlas-muted); display: block; margin-bottom: 0.55rem; }
+  .atlas__how div { display: flex; gap: 1.15rem; }
+  .atlas__how p { color: #c7dcdf; font-size: 0.67rem; line-height: 1.35; margin: 0; }
+  .atlas__how b { color: var(--atlas-cyan); font-family: var(--font-mono); font-size: 0.58rem; margin-right: 0.28rem; }
 
-  .atlas__readout { align-items: center; bottom: 8.5rem; color: rgb(220 233 232 / 0.72); display: flex; gap: 0.6rem; left: clamp(1.25rem, 4vw, 4.5rem); letter-spacing: 0.055em; max-width: 31rem; text-transform: none; }
-  .atlas__readout span { background: var(--hs-signal); border-radius: 50%; box-shadow: 0 0 0 0.38rem rgb(0 185 232 / 0.09); flex: 0 0 auto; height: 0.3rem; width: 0.3rem; }
-  .atlas__readout p { margin: 0; }
-  .atlas__legend { bottom: 8.5rem; color: rgb(220 233 232 / 0.56); display: flex; flex-wrap: wrap; gap: 0.8rem 1rem; letter-spacing: 0.06em; right: clamp(1.25rem, 4vw, 4.5rem); text-transform: none; }
-  .atlas__legend span { align-items: center; display: inline-flex; gap: 0.4rem; }
+  .atlas__readout { align-items: center; bottom: 1.25rem; display: flex; gap: 0.55rem; left: clamp(1.25rem, 3.2vw, 4rem); }
+  .atlas__readout i { background: var(--atlas-cyan); box-shadow: 0 0 0.85rem var(--atlas-cyan); height: 0.32rem; width: 0.32rem; }
+  .atlas__readout p { color: var(--atlas-muted); font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.02em; margin: 0; }
+  .atlas__legend { align-items: center; bottom: 1.25rem; display: flex; gap: 0.9rem; right: clamp(1.25rem, 3.2vw, 4rem); }
+  .atlas__legend > span, .atlas__legend button { align-items: center; color: var(--atlas-muted); display: inline-flex; font-family: var(--font-mono); font-size: 0.57rem; gap: 0.35rem; letter-spacing: 0.02em; }
   .atlas__legend i { display: inline-block; height: 0.42rem; width: 0.42rem; }
-  .atlas__legend-open { background: var(--hs-signal); }
-  .atlas__legend-review { background: #e7a44e; border-radius: 50%; }
-  .atlas__legend-restricted { border: 1px solid rgb(220 233 232 / 0.6); }
+  .atlas__legend-water { background: var(--atlas-cyan); box-shadow: 0 0 0.7rem var(--atlas-cyan); }
+  .atlas__legend-field { border: 1px solid var(--atlas-amber); transform: rotate(45deg); }
+  .atlas__legend button { background: transparent; border: 0; cursor: pointer; min-height: 2.25rem; padding: 0; }
+  .atlas__legend button b { color: var(--atlas-cyan); font-size: 0.9rem; font-weight: 400; }
+  .atlas__safety { background: rgb(2 18 27 / 0.94); border: 1px solid var(--atlas-line); bottom: 3.75rem; max-width: 31rem; padding: 0.9rem 1rem; right: clamp(1.25rem, 3.2vw, 4rem); }
+  .atlas__safety p { color: var(--atlas-muted); font-size: 0.72rem; line-height: 1.55; margin: 0; }
+  .atlas__safety strong { color: var(--atlas-paper); }
+  .atlas__caption { color: rgb(159 194 200 / 0.6); font-family: var(--font-mono); font-size: 0.52rem; left: 50%; letter-spacing: 0.03em; margin: 0; text-align: center; top: calc(100% - 1.55rem); transform: translateX(-50%); white-space: nowrap; }
 
-  @media (max-width: 1120px) {
-    .atlas__timeline { grid-template-columns: 8rem minmax(12rem, 1fr); width: min(39rem, calc(100vw - 28rem)); }
-    .atlas__timeline-help { display: none; }
-    .atlas__legend { max-width: 18rem; }
+  .atlas__reticle { border: 1px solid rgb(0 200 234 / 0.16); height: min(44vw, 32rem); left: 51%; pointer-events: none; position: absolute; top: 47%; transform: translate(-50%, -50%) rotate(45deg); width: min(44vw, 32rem); z-index: 2; }
+  .atlas__reticle i { background: var(--atlas-cyan); height: 0.3rem; position: absolute; width: 1.4rem; }
+  .atlas__reticle i:nth-child(1) { left: -0.07rem; top: -0.07rem; transform: rotate(-45deg); transform-origin: left center; }
+  .atlas__reticle i:nth-child(2) { right: -0.07rem; top: -0.07rem; transform: rotate(45deg); transform-origin: right center; }
+  .atlas__reticle i:nth-child(3) { bottom: -0.07rem; left: -0.07rem; transform: rotate(45deg); transform-origin: left center; }
+  .atlas__reticle i:nth-child(4) { bottom: -0.07rem; right: -0.07rem; transform: rotate(-45deg); transform-origin: right center; }
+
+  :global(.atlas button:focus-visible), :global(.atlas a:focus-visible) { outline: 2px solid #d9fbff; outline-offset: 4px; }
+
+  @media (max-width: 1050px) {
+    .atlas__topbar { grid-template-columns: 1fr auto; }
+    .atlas__identity { display: none; }
+    .atlas__briefing { right: 1.25rem; top: 7.4rem; }
+    .atlas__how { display: none; }
   }
-  @media (max-width: 850px) {
-    :global(body) { overflow: auto; }
-    .atlas { height: auto; min-height: 100svh; overflow: hidden; padding-bottom: 19rem; }
-    .atlas__topbar { grid-template-columns: 1fr auto; min-height: 4.8rem; padding-inline: 1.1rem; }
-    .atlas__identity, .atlas__mode { display: none; }
-    .atlas__return { font-size: 0.52rem; }
-    .atlas__intro { max-width: 24rem; top: 6.5rem; }
-    .atlas__intro h1 { font-size: clamp(2.9rem, 12vw, 4.6rem); }
-    .atlas__intro > p:not(.atlas__eyebrow) { max-width: 22rem; }
-    .atlas__missions { left: auto; right: 1.1rem; top: 5.7rem; transform: none; }
-    .atlas__missions > p { display: none; }
-    .atlas__missions > div { display: grid; grid-template-columns: 1fr 1fr; }
-    .atlas__missions button { font-size: 0.58rem; }
-    .atlas__review { right: 1.1rem; top: 18.2rem; width: min(18.2rem, calc(100vw - 2.2rem)); }
-    .atlas__layers { bottom: 1rem; left: 1.1rem; width: min(22.5rem, calc(100vw - 2.2rem)); }
-    .atlas__timeline { bottom: 1rem; left: auto; right: 1.1rem; transform: none; width: min(18.2rem, calc(100vw - 2.2rem)); }
-    .atlas__timeline { grid-template-columns: 1fr; gap: 0.25rem; }
-    .atlas__readout { bottom: 14.7rem; left: 1.1rem; max-width: 19rem; }
-    .atlas__legend { bottom: 13rem; display: none; right: 1.1rem; }
+
+  @media (max-width: 760px) {
+    :global(body) { overflow-x: hidden; }
+    .atlas { min-height: 58rem; overflow: hidden; }
+    .atlas__wash { background: linear-gradient(180deg, rgb(0 9 14 / 0.5) 0%, transparent 38%, rgb(0 9 14 / 0.78) 73%, #020a10 100%); }
+    .atlas__topbar { left: 1.1rem; padding: 1rem 0; right: 1.1rem; }
+    .atlas__topbar :global(.brand__name) { font-size: 1.02rem; }
+    .atlas__orbit-button { font-size: 0; gap: 0; min-width: 2.75rem; }
+    .atlas__orbit-button i { height: 1rem; width: 1rem; }
+    .atlas__return { font-size: 0; min-width: 1.55rem; }
+    .atlas__return span { font-size: 0.95rem; }
+    .atlas__top-actions { gap: 0.75rem; }
+    .atlas__intro { left: 1.25rem; max-width: 22rem; right: 1.25rem; top: 6.9rem; }
+    .atlas__intro h1 { font-size: clamp(2.65rem, 13vw, 4.25rem); max-width: 8.5ch; }
+    .atlas__intro > p:not(.atlas__eyebrow) { font-size: 0.92rem; margin-top: 1rem; max-width: 34ch; }
+    .atlas__intro-actions > span { display: none; }
+    .atlas__briefing { bottom: 14rem; left: 1.25rem; max-width: none; padding: 0.8rem 0.9rem; right: 1.25rem; top: auto; }
+    .atlas__briefing-number { display: none; }
+    .atlas__briefing h2 { font-size: 1.04rem; max-width: none; }
+    .atlas__briefing > p:not(.atlas__briefing-number) { font-size: 0.74rem; margin: 0.48rem 0 0.65rem; max-width: 46ch; }
+    .atlas__briefing-rule { padding-top: 0.65rem; }
+    .atlas__missions { bottom: 4.1rem; left: 1.25rem; min-width: 0; right: 1.25rem; }
+    .atlas__mission { min-height: 3.1rem; }
+    .atlas__mission strong { font-size: 0.75rem; }
+    .atlas__readout { bottom: 1.2rem; left: 1.25rem; max-width: 16rem; }
+    .atlas__readout p { font-size: 0.53rem; line-height: 1.35; }
+    .atlas__legend { bottom: 1rem; right: 1.25rem; }
+    .atlas__legend > span { display: none; }
+    .atlas__legend button { font-size: 0.55rem; }
+    .atlas__caption { display: none; }
+    .atlas__safety { bottom: 3.85rem; left: 1.25rem; max-width: none; right: 1.25rem; }
+    .atlas__reticle { height: 66vw; left: 52%; top: 38%; width: 66vw; }
   }
-  @media (max-width: 560px) {
-    .atlas { min-height: 72rem; }
-    .atlas__map-wrap { min-height: 72rem; position: absolute; }
-    .atlas__topbar::after { left: 0; width: 45%; }
-    .atlas__intro { left: 1.1rem; top: 6.2rem; }
-    .atlas__intro h1 { font-size: clamp(2.65rem, 10.6vw, 3.7rem); margin-top: 1rem; }
-    .atlas__mobile-break { display: block; }
-    .atlas__intro > p:not(.atlas__eyebrow) { font-size: 0.82rem; max-width: 18rem; }
-    .atlas__access { font-size: 0.67rem; }
-    .atlas__access-panel { max-width: 19rem; }
-    .atlas__missions { display: none; }
-    .atlas__review { top: 29.5rem; }
-    .atlas__review-head, .atlas__locked-state, .atlas__review-rule { padding-inline: 0.85rem; }
-    .atlas__review h2 { font-size: 1.05rem; }
-    .atlas__locked-state { gap: 0.7rem; grid-template-columns: 2.2rem 1fr; }
-    .atlas__locked-icon { height: 2rem; width: 2rem; }
-    .atlas__layers { bottom: 1rem; }
-    .atlas__panel-title, .atlas-layer, .atlas__source-note { padding-inline: 0.85rem; }
-    .atlas-layer { gap: 0.65rem; min-height: 3.45rem; }
-    .atlas__source-note { font-size: 0.54rem; line-height: 1.35; padding-block: 0.52rem 0.58rem; }
-    .atlas__timeline { bottom: 17.2rem; }
-    .atlas__readout { display: none; }
+
+  @media (max-width: 390px) {
+    .atlas { min-height: 61rem; }
+    .atlas__intro h1 { font-size: 2.55rem; }
+    .atlas__briefing { bottom: 14.7rem; }
+    .atlas__mission-list { grid-template-columns: 1fr; }
+    .atlas__mission:nth-child(odd) { border-right: 0; }
+    .atlas__mission:nth-child(3) { border-bottom: 1px solid var(--atlas-line); }
+    .atlas__missions { bottom: 3.8rem; }
   }
+
   @media (prefers-reduced-motion: reduce) {
-    .atlas__field { opacity: 0.45; }
-    .atlas *, .atlas *::before, .atlas *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    .atlas__play-button, .atlas__mission, .atlas__mission i { transition: none; }
+    .atlas__grain { opacity: 0.08; }
   }
 </style>
