@@ -37,7 +37,20 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build Astro site
-        run: pnpm run build
+        id: build
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          pnpm run build 2>&1 | tee build.log
+
+      - name: Report build failure
+        if: steps.build.outcome == 'failure'
+        shell: bash
+        run: |
+          message="$(tail -n 30 build.log | tr '\n' ' ' | sed 's/%/%25/g; s/\r/%0D/g; s/\n/%0A/g')"
+          echo "::error title=Astro build failed::$message"
+          exit 1
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4
